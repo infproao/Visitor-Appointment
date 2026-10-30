@@ -16,9 +16,12 @@
 │       │   ├── design-tokens.md         ← 颜色/字号/间距/圆角/控件尺寸
 │       │   ├── components.md            ← 标准组件、状态、组合规范
 │       │   └── pages.md                 ← 典型页面与业务场景
-│       └── assets/
-│           ├── prototype-template/      ← 可运行原型模板（待填充）
-│           └── images/                  ← 图片/图标资源（待填充）
+│       ├── manifest.yaml               ← 发布元信息
+│       ├── templates/
+│       │   └── project-starter/        ← 可运行工程模板（degit 一键起工程）
+│       ├── assets/
+│       │   └── images/                 ← 图片/图标资源（成功对勾/二维码/空状态）
+│       └── references/                 ← 5 个规范文档
 ├── assets/
 │   ├── design-tokens/Mode-1.tokens.json ← 海信设计 token（色板）
 │   ├── design-files/                    ← 完整设计稿 SVG
@@ -54,6 +57,6 @@
 
 ## 待办
 
-- 填充 `prototype-template/` 可运行模板
-- 填充 `images/` 图标资源
-- 确认剩余 ⚠️ 待确认项（状态标签色映射、底部工具栏/搜索框高度）
+- [x] 填充可运行模板（已移至 `templates/project-starter/`，支持 degit）
+- [x] 填充 `images/` 图标资源（成功对勾 / 二维码占位 / 空状态插画）
+- [ ] 确认剩余 ⚠️ 待确认项（状态标签色映射、底部工具栏/搜索框高度）
