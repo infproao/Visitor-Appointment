@@ -1,0 +1,10 @@
+# WorkBuddy 内部状态，不入库
+.workbuddy/
+
+# 系统文件
+.DS_Store
+*.log
+
+# 依赖与构建产物
+node_modules/
+dist/
