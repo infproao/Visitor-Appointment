@@ -1,0 +1,79 @@
+/* ============================================
+   海信访客预约 · 设计 token 主题覆盖
+   颜色来源：海信 Mode-1.tokens.json
+   尺寸来源：设计稿确认值
+   覆盖 Vant 4 的 --van-* CSS 变量
+   ============================================ */
+
+:root {
+  /* --- 主题色（海信 主题色.primary-*）--- */
+  --van-primary-color: #22BBB3;            /* primary-5 主色 */
+  --van-primary-color-light: #4ACCC1;      /* primary-4 浅端 */
+  --van-primary-color-dark: #00AAA6;       /* primary-6 深端 */
+
+  /* --- 状态色（海信语义色）--- */
+  --van-success-color: #23C343;            /* 成功色.success-5 */
+  --van-danger-color: #F53F3F;             /* 错误色.danger-6 */
+  --van-warning-color: #FF7D00;            /* 警示色.warning-6 */
+  --van-info-color: #4080FF;               /* 信息色.info-5 */
+
+  /* --- 文字色（海信 文字.color-text-*）--- */
+  --van-text-color: #1D2129;               /* gray-10 主文字 */
+  --van-text-color-2: #4E5969;             /* gray-8 次文字 */
+  --van-text-color-3: #86909C;             /* gray-6 辅助文字 */
+  --van-text-color-4: #C9CDD4;             /* gray-4 占位/禁用 */
+
+  /* --- 边框与背景（海信 线条/场景）--- */
+  --van-border-color: #E5E6EB;             /* gray-3 边框 */
+  --van-background: #F2F3F5;               /* gray-2 页面背景 */
+  --van-background-2: #FFFFFF;             /* 卡片背景 */
+  --van-active-color: #F2F3F5;             /* gray-2 激活底 */
+  --van-overlay-color: rgba(0, 0, 0, 0.7); /* 遮罩 */
+
+  /* --- 圆角（设计稿确认 12/16/20/24）--- */
+  --van-radius-md: 12px;
+  --van-radius-lg: 16px;
+
+  /* --- 按钮高度（大48/中44/小32）--- */
+  --van-button-default-height: 44px;
+  --van-button-large-height: 48px;
+  --van-button-small-height: 32px;
+
+  /* --- 字号（设计稿确认 12/14/16/18/20/24）--- */
+  --van-font-size-xs: 12px;
+  --van-font-size-sm: 14px;
+  --van-font-size-md: 16px;
+  --van-font-size-lg: 18px;
+  --van-font-size-xl: 20px;
+
+  /* --- 间距（沿用 Vant 4/8/12/16/24/32）--- */
+  --van-padding-base: 4px;
+  --van-padding-xs: 8px;
+  --van-padding-sm: 12px;
+  --van-padding-md: 16px;
+  --van-padding-lg: 24px;
+  --van-padding-xl: 32px;
+}
+
+/* 全局基础样式 */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--van-background);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 375px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--van-background);
+}
+
+/* 主按钮禁用态：浅青实色 primary-3 */
+.van-button--primary.van-button--disabled {
+  background: #79DDD1;   /* primary-3 */
+  border-color: #79DDD1;
+  color: #FFFFFF;
+  opacity: 1;
+}

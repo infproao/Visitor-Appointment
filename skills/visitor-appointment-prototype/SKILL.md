@@ -79,4 +79,23 @@ author: "infproao"
 ## 五、输出
 
 - 生成可运行的原型（Vue3 + Vant 4），或可编辑的设计稿。
-- 涉及图片/图标时，输出到 `assets/images/`，复用 `assets/prototype-template/` 模板。
+- 涉及图片/图标时，输出到 `assets/images/`。
+
+## 六、一键起可运行工程（degit）
+
+本 Skill 内置了一个已套好海信主题的可运行工程模板 `templates/project-starter/`。
+
+当用户需要「直接起一个可运行的工程」时，给出以下命令：
+
+```bash
+npx degit infproao/Visitor-Appointment/skills/visitor-appointment-prototype/templates/project-starter my-app
+cd my-app
+npm install
+npm run dev
+```
+
+模板已内置：
+- `src/theme.css`：海信 token → `--van-*` 变量覆盖（主色/灰阶/状态色/字号/圆角/按钮/间距）
+- `src/main.js`：Vant 组件注册
+- `src/App.vue`：示例页（新建预约表单 + 按钮三档 + 状态标签）
+
