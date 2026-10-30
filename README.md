@@ -21,7 +21,6 @@
 │       │   └── project-starter/        ← 可运行工程模板（degit 一键起工程）
 │       ├── assets/
 │       │   └── images/                 ← 图片/图标资源（成功对勾/二维码/空状态）
-│       └── references/                 ← 5 个规范文档
 ├── assets/
 │   ├── design-tokens/Mode-1.tokens.json ← 海信设计 token（色板）
 │   ├── design-files/                    ← 完整设计稿 SVG
@@ -36,6 +35,19 @@
 1. 将 `skills/visitor-appointment-prototype/` 作为 Skill 加载到 WorkBuddy 或 Kiro。
 2. Skill 触发关键词：访客预约、访客、预约、通行证、入园、离园、审批、安保、出入登记等。
 3. Skill 会按 `SKILL.md` 的执行流程，读取 `references/` 下的规范，用 Vant 4 组件 + 海信 token 生成页面。
+
+## 一键启动（可运行工程）
+
+基于内置模板 `templates/project-starter/` 一键生成 Vue3 + Vant 4 可运行工程：
+
+```bash
+npx degit infproao/Visitor-Appointment/skills/visitor-appointment-prototype/templates/project-starter my-app
+cd my-app
+npm install
+npm run dev
+```
+
+生成后即可在浏览器打开 `npm run dev` 输出的本地地址，看到已套用海信 token（主色 `#22BBB3`）与 Vant 4 组件的示例页面。
 
 ## 设计规范核心结论
 
@@ -54,6 +66,39 @@
 
 > 详细规范见 `skills/visitor-appointment-prototype/references/`。
 > 标注约定：✅ 已确认 / ⚠️ 待确认 / 📋 方案建议。
+
+## 版本信息
+
+| 项 | 值 |
+|---|---|
+| 当前版本 | `1.0.0` |
+| 发布日期 | 2026-10-28 |
+| 作者 | `infproao` |
+| 状态 | 可发布 / 可安装 |
+
+## 更新日志（Changelog）
+
+### v1.0.0（2026-10-28）
+
+首个可发布、可安装版本。
+
+**新增**
+
+- 建立 Skill 本体 `SKILL.md`：触发条件、资料读取顺序、执行流程与硬性约束。
+- 新增 5 个规范文档：`product-context.md`、`design-principles.md`、`design-tokens.md`、`components.md`、`pages.md`。
+- 新增发布元信息 `manifest.yaml`（分类 / 标签 / 触发词 / 入口）。
+- 新增可运行工程模板 `templates/project-starter/`（Vue3 + Vant 4 + Vite，支持 degit 一键起工程）。
+- 新增图标/图片资源 `assets/images/`（成功对勾、二维码占位、空状态插画）。
+
+**设计规范定稿**
+
+- 主色确定为海信 primary-5 `#22BBB3`，禁用主按钮为浅青实色 primary-3。
+- 灰阶采用海信「中性灰」gray-1..10。
+- 字号 12/14/16/18/20/24，圆角 12/16/20(Popup)/24。
+- 按钮三档 48/44/32，标签三档 24/28/32。
+- 间距 0 或 4 的倍数，沿用 Vant `4/8/12/16/24/32`。
+- 状态标签色映射已确认：已通过 `#23C343`、需审核 `#F9CC45`、未通过 `#F76560`、已过期 `#C9CDD4`。
+- 输入框 311×76（Hug），搜索框 343×56（Hug）。
 
 ## 待办
 
