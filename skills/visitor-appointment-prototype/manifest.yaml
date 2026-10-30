@@ -1,0 +1,33 @@
+name: visitor-appointment-prototype
+display_name: 访客预约原型生成
+display_name_en: Visitor Appointment Prototype
+description: 生成海信访客预约移动端 H5 原型页面
+description_zh: 基于海信设计 token 与 Vant 4 组件，生成访客预约（预约填报、审批、安保核验、出入登记、通行证、扫码等）移动端 H5 原型。技术栈 Vue3 + Vant 4，多语言中/英/越/泰。
+description_en: Generate H5 prototype pages for the Hisense Visitor Appointment product (booking, approval, security check, entry/exit registration, pass, scan) using Hisense design tokens and Vant 4 components. Vue3 + Vant 4, i18n zh/en/vi/th.
+category: design
+category_name: 设计
+version: 1.0.0
+author: infproao
+slug: visitor-appointment-prototype
+
+tags:
+  - 访客预约
+  - 原型
+  - H5
+  - 移动端
+  - Vant
+
+triggers:
+  - 访客预约
+  - 访客
+  - 预约
+  - 通行证
+  - 入园
+  - 离园
+  - 审批
+  - 安保
+  - 出入登记
+  - 扫码
+  - Visitor Appointment
+
+entry: SKILL.md

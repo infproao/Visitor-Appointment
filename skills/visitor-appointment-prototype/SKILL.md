@@ -1,6 +1,20 @@
 ---
 name: visitor-appointment-prototype
-description: 生成海信访客预约（Visitor Appointment）移动端 H5 原型。当用户需要生成访客预约相关页面（预约填报、审批、安保核验、出入登记、通行证、扫码等）时使用。技术栈 Vue3 + Vant 4，多语言中/英/越/泰。
+display_name: 访客预约原型生成
+display_name_en: Visitor Appointment Prototype
+description: 生成海信访客预约移动端 H5 原型页面
+description_zh: 基于海信设计 token 与 Vant 4 组件，生成访客预约（预约填报、审批、安保核验、出入登记、通行证、扫码等）移动端 H5 原型。技术栈 Vue3 + Vant 4，多语言中/英/越/泰。
+description_en: Generate H5 prototype pages for the Hisense Visitor Appointment product (booking, approval, security check, entry/exit registration, pass, scan) using Hisense design tokens and Vant 4 components. Vue3 + Vant 4, i18n zh/en/vi/th.
+examples_zh:
+  - "帮我生成访客预约的新建预约表单页面"
+  - "生成安保端的出入登记列表页"
+  - "做一个通行证二维码页面"
+examples_en:
+  - "Generate the visitor appointment form page"
+  - "Create the security entry/exit registration list page"
+  - "Make a visitor pass QR code page"
+version: 1.0.0
+author: "infproao"
 ---
 
 # 访客预约原型生成 Skill
