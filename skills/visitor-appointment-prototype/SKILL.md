@@ -13,7 +13,7 @@ examples_en:
   - "Generate the visitor appointment form page"
   - "Create the security entry/exit registration list page"
   - "Make a visitor pass QR code page"
-version: 1.0.0
+version: 1.1.0
 author: "infproao"
 ---
 

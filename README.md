@@ -10,6 +10,7 @@
 ├── skills/
 │   └── visitor-appointment-prototype/   ← Skill 本体
 │       ├── SKILL.md                     ← 触发条件、资料读取、执行流程
+│       ├── AGENTS.md                    ← AI 编码助手规范入口（Kiro 等自动加载）
 │       ├── references/
 │       │   ├── product-context.md       ← 产品定位、用户与业务知识
 │       │   ├── design-principles.md     ← 设计原则与交互规则
@@ -18,7 +19,7 @@
 │       │   └── pages.md                 ← 典型页面与业务场景
 │       ├── manifest.yaml               ← 发布元信息
 │       ├── templates/
-│       │   └── project-starter/        ← 可运行工程模板（degit 一键起工程）
+│       │   └── project-starter/        ← 可运行工程模板（degit 一键起工程，内含 AGENTS.md）
 │       ├── assets/
 │       │   └── images/                 ← 图片/图标资源（成功对勾/二维码/空状态）
 ├── assets/
@@ -35,6 +36,33 @@
 1. 将 `skills/visitor-appointment-prototype/` 作为 Skill 加载到 WorkBuddy 或 Kiro。
 2. Skill 触发关键词：访客预约、访客、预约、通行证、入园、离园、审批、安保、出入登记等。
 3. Skill 会按 `SKILL.md` 的执行流程，读取 `references/` 下的规范，用 Vant 4 组件 + 海信 token 生成页面。
+
+## 在 Kiro 中继续执行
+
+Kiro（字节 AI IDE）不认 WorkBuddy 的 `SKILL.md`/`manifest.yaml` 加载机制，但它会**自动加载项目根目录的 `AGENTS.md`**。本 Skill 已内置该入口，让 Kiro 直接按你配置好的规范执行。
+
+**方式一：克隆整个仓库（拿到完整规范，推荐）**
+
+```bash
+git clone https://github.com/infproao/Visitor-Appointment.git
+```
+
+克隆后，`skills/visitor-appointment-prototype/AGENTS.md` 会被 Kiro 自动识别并遵守；若需要更细的规范，Kiro 可按 `AGENTS.md` 指引读取 `references/` 下的 5 个文档。
+
+**方式二：只起可运行工程（开写页面）**
+
+```bash
+npx degit infproao/Visitor-Appointment/skills/visitor-appointment-prototype/templates/project-starter my-app
+cd my-app && npm install && npm run dev
+```
+
+工程模板内也内置了精简版 `AGENTS.md`，Kiro 在工程内续写页面时同样遵守海信 token 与组件规范。
+
+**给 Kiro 的续写指令（可直接粘贴）**
+
+> 读取 `skills/visitor-appointment-prototype/AGENTS.md`，严格遵守其中的硬性约束与组件映射，用 Vue3 + Vant 4 + 海信 token（主色 `#22BBB3`）继续生成访客预约页面。多语言中/英/越/泰，双端（访客端 + 安保端）。
+
+> 注意：仓库需为 public，否则 Kiro 的 `git clone`/`degit` 会因认证失败拉取不到。
 
 ## 一键启动（可运行工程）
 
@@ -71,12 +99,22 @@ npm run dev
 
 | 项 | 值 |
 |---|---|
-| 当前版本 | `1.0.0` |
-| 发布日期 | 2026-10-28 |
+| 当前版本 | `1.1.0` |
+| 发布日期 | 2026-11-02 |
 | 作者 | `infproao` |
 | 状态 | 可发布 / 可安装 |
 
 ## 更新日志（Changelog）
+
+### v1.1.0（2026-11-02）
+
+新增 Kiro 等 AI 编码助手的原生入口，让 Skill 可跨工具按已配置规范执行。
+
+**新增**
+
+- 新增 `skills/visitor-appointment-prototype/AGENTS.md`：AI 编码助手规范入口（硬性约束 / 核心色板 / 组件映射 / 页面清单 / 校验清单）。
+- 新增工程模板内 `templates/project-starter/AGENTS.md`：工程内精简版规范，degit 起工程后 Kiro 仍遵守海信 token 与组件规范。
+- README 补充「在 Kiro 中继续执行」用法（clone 完整仓库 / degit 起工程 / 续写指令）。
 
 ### v1.0.0（2026-10-28）
 

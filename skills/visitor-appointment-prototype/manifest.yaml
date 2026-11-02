@@ -6,7 +6,7 @@ description_zh: 基于海信设计 token 与 Vant 4 组件，生成访客预约�
 description_en: Generate H5 prototype pages for the Hisense Visitor Appointment product (booking, approval, security check, entry/exit registration, pass, scan) using Hisense design tokens and Vant 4 components. Vue3 + Vant 4, i18n zh/en/vi/th.
 category: design
 category_name: 设计
-version: 1.0.0
+version: 1.1.0
 author: infproao
 slug: visitor-appointment-prototype
 
