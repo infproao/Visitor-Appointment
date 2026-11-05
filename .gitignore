@@ -8,3 +8,6 @@
 # 依赖与构建产物
 node_modules/
 dist/
+
+# Vite 运行时临时文件
+vite.config.js.timestamp-*.mjs
