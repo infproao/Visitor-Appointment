@@ -19,14 +19,14 @@
 | 标签 | `van-tag` | 状态标签 | 见状态色映射 |
 | 页签 | `van-tabs` | 审核/审批/出入记录 | 选中、未选中 |
 | 弹窗 | `van-dialog` / `van-popup` | 入园操作、补授权、筛选 | 打开、关闭 |
-| 按钮 | `van-button` | 主/次按钮 | 默认、禁用、按下 |
+| 按钮 | `van-button`（行为基础，可由通用 Button 封装） | 主/次按钮；视觉按 Figma 通用 Button 组件实现 | 默认、禁用、按下 |
 | 头像 | `van-image`（圆形） | 访客头像 | 有图、占位 |
 | 上传 | `van-uploader` | 访客照片、车辆拍照 | 未上传、已上传 |
 | 下拉菜单 | `van-dropdown-menu` | 展厅/园区筛选 | 展开、选中 |
 | 空状态 | `van-empty` | 无预约记录 | 空态 |
 | 通知条 | `van-notice-bar` | 授权提示、温馨提示 | 默认 |
 | 步进器 | `van-stepper` | 人数选择 | 增减 |
-| 步骤条 | `van-steps` | 基本信息/上传照片/确认 | 完成/当前/未完成 |
+| 步骤条 | 自定义 `Steps`（按 Figma `.steps-item/dot-horizontal` 实现） | 预约信息/访客信息/信息确认 | 完成/当前/未完成 |
 | 二维码展示 | 自定义 + 图片 | 通行证/提交成功 | 见 design-tokens 二维码规范 |
 
 ## 二、业务组件
@@ -39,7 +39,7 @@
 | 动态/日志卡片 | 时间线卡片 | 时间 + 操作人 + 状态标签 + 正文 + 关键词行 + 图片缩略图 | 默认、展开更多 |
 | 人员搜索行 | 列表行 | 头像 + 姓名 + 标签 + 操作图标（编辑/删除） | 默认、可编辑 |
 | 车牌输入行 | 输入行 | 车牌号 + 编辑/删除图标 | 可编辑、只读禁用 |
-| 语言切换按钮 | 普通按钮 | 文案（CN/EN/VN/TH） | 默认 |
+| 语言切换按钮 | 普通按钮 + Popup/ActionSheet | 显示当前语言；点击后打开语言选择弹层并显示选中态，选项由地区/语言配置提供，不得写死为单一列表 | 默认 |
 
 ## 三、状态标签（业务状态色映射）
 
@@ -73,7 +73,7 @@
 
 | 组合产物 | 组成（基础组件） |
 |---|---|
-| 添加同行人弹窗 | Popup + Field(姓名) + Field(证件) + 保存并继续/保存按钮 |
+| 添加同行人弹窗 | Popup + 至少 Field(姓名) + 保存并继续/保存按钮；证件字段是否需要由地区需求确认 |
 | 添加车辆弹窗 | Popup + Field(车牌) + 保存按钮 |
 | 分享操作组 | 普通按钮组（保存二维码 / 复制链接 / 分享 Line） |
 | 入境操作弹窗 | Popup + Search + 人员列表(Checkbox) + 取消/下一步 |
@@ -121,3 +121,94 @@
 | 输入框高度 | 76px（Hug） |
 
 > 依据：设计稿属性面板「311 Fill × 76 Hug」。其余待设计方确认。
+
+
+## 八、实现原则补充
+
+- Figma 中的步骤条没有视觉等价的 Vant 组件，按 Figma `.steps-item/dot-horizontal` 结构实现项目通用 `Steps` 组件，不强行使用默认 `van-steps`。
+- Figma 中已有通用 `Button` 组件，应沉淀为项目通用 `Button`。`van-button` 可以作为交互基础，但不能直接采用默认视觉，必须覆盖 Figma 的尺寸、圆角、颜色、字体和状态。
+- Vant 中没有等价组件时，优先按 Figma 通用组件实现；Vant 只负责可复用的行为能力。
+
+
+## 九、项目通用 Field 实现
+
+当 Vant `van-field` 的默认结构无法达到 Figma `field-input` 的视觉要求时，使用项目通用组件：
+
+```text
+src/components/HisenseField.vue
+```
+
+组件固定沉淀：
+
+- 311px 内容宽度；
+- 默认76px高度；
+- 标题/输入内容上下结构；
+- 16px标题和输入内容；
+- 必填星号使用 `#F53F3F`；
+- 占位文字使用 `#C9CDD4`；
+- 分割线使用 `#F2F3F5`；
+- 选择字段使用 Figma 16×16px 箭头资源；
+- 支持普通输入、只读选择、手机号前缀、多行文本；
+- 错误提示显示在字段下方；
+- 错误状态不改变字段边框颜色。
+
+`van-field` 仍可用于业务场景，但不能覆盖或替代 `HisenseField` 的 Figma 视觉结构。
+
+
+## 十、日期选择弹层
+
+日期选择弹层继续复用 Vant Calendar 的日期选择行为，但必须使用项目海信样式覆盖，不得显示 Vant 默认蓝色。
+
+| 项目 | 规格 | 来源 | 状态 |
+|---|---|---|---|
+| 弹层 | 底部弹出、白底、顶部圆角 | 用户提供的日期弹层参考图、Vant行为 | ✅ |
+| 标题 | 居中“日期选择”，14px Semibold | 用户提供的日期弹层参考图 | ✅ |
+| 关闭按钮 | 右上角44px触摸区域，图标使用辅助色 | 用户提供的日期弹层参考图 | ✅ |
+| 月份标题 | 14px Semibold，主文字色 | 用户提供的日期弹层参考图 | ✅ |
+| 星期栏 | 12px，次文字色 | 用户提供的日期弹层参考图 | ✅ |
+| 日期文字 | 14px，次文字色 | 用户提供的日期弹层参考图 | ✅ |
+| 选中日期 | `#00AAA6`，白字，约36×38px，4px圆角 | 海信 Token、用户参考图 | ✅ |
+| 禁用日期 | `#C9CDD4` | 海信 gray-4 | ✅ |
+| 确认按钮 | 44px高，20px圆角，背景`#22BBB3`，白字 | Figma Button规范、用户参考图 | ✅ |
+| 日历行为 | 继续使用 `van-calendar` | Vant组件选型 | ✅ |
+| 日历视觉 | 必须覆盖 Vant Calendar 默认蓝色、默认间距和默认按钮 | 用户要求 | ✅ |
+
+
+### 项目通用 Checkbox 实现
+
+Figma Checkbox 已落地为：
+
+```text
+src/components/HisenseCheckbox.vue
+```
+
+不直接使用浏览器默认 checkbox 或 Vant 默认蓝色选中态。组件固定：
+
+- 14×14px；
+- 未选中边框 `#E5E6EB`、白底；
+- 选中背景 `#00AAA6`、白色勾选；
+- 触摸区域不小于44px；
+- 文案14px、行高22px。
+
+
+## 十一、本次业务组件落地
+
+已在 starter 中落地并接入以下 Figma 业务组件：
+
+```text
+src/components/HisenseUserCard.vue
+src/components/HisenseVehicleCard.vue
+src/components/HisenseSelectPopup.vue
+src/components/HisenseConfirmationCard.vue
+```
+
+对应关系：
+
+| Figma业务组件 | 项目组件 | 用途 |
+|---|---|---|
+| `user-card-default / user-card-edit` | `HisenseUserCard` | 同行人头像、姓名、授权状态、编辑和删除 |
+| `vehicle-card-default / 车辆card-edit` | `HisenseVehicleCard` | 车牌号、编辑和删除 |
+| `底部抽屉 / Select List` | `HisenseSelectPopup` | 园区、来访类型、证件类型、区号选择 |
+| 信息确认卡片 | `HisenseConfirmationCard` | 预约信息和访客信息分组确认 |
+
+页面不得继续使用“暂无同行人 + 普通文本按钮”替代 Figma 业务卡片。

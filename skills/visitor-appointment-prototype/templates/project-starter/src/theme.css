@@ -25,10 +25,11 @@
 
   /* --- 边框与背景（海信 线条/场景）--- */
   --van-border-color: #E5E6EB;             /* gray-3 边框 */
+  --van-line-color: #F2F3F5;               /* color-border-1 字段分割线 */
   --van-background: #F2F3F5;               /* gray-2 页面背景 */
   --van-background-2: #FFFFFF;             /* 卡片背景 */
   --van-active-color: #F2F3F5;             /* gray-2 激活底 */
-  --van-overlay-color: rgba(0, 0, 0, 0.7); /* 遮罩 */
+  --van-overlay-color: rgba(0, 0, 0, 0.6); /* 设计稿遮罩 */
 
   /* --- 圆角（设计稿确认 12/16/20/24）--- */
   --van-radius-md: 12px;
@@ -76,4 +77,125 @@ html, body {
   border-color: #79DDD1;
   color: #FFFFFF;
   opacity: 1;
+}
+
+
+/* Figma 日历弹层：保留 Vant 行为，覆盖为海信视觉 */
+.date-popup {
+  overflow: hidden;
+  background: #FFFFFF;
+}
+
+.date-popup-header {
+  position: relative;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+}
+
+.date-popup-header h2 {
+  margin: 0;
+  color: #1D2129;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.date-popup-close {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  color: #86909C;
+  background: transparent;
+  font-size: 18px;
+}
+
+.date-popup .van-calendar {
+  height: auto;
+  color: #1D2129;
+  background: #FFFFFF;
+}
+
+.date-popup .van-calendar__header {
+  box-shadow: none;
+}
+
+.date-popup .van-calendar__header-subtitle {
+  height: 36px;
+  color: #1D2129;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 36px;
+}
+
+.date-popup .van-calendar__weekdays {
+  height: 36px;
+  color: #4E5969;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.date-popup .van-calendar__weekday {
+  color: #4E5969;
+}
+
+.date-popup .van-calendar__month-title {
+  color: #1D2129;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.date-popup .van-calendar__day {
+  height: 48px;
+  color: #4E5969;
+  font-size: 14px;
+  line-height: 48px;
+}
+
+.date-popup .van-calendar__day--disabled {
+  color: #C9CDD4;
+}
+
+.date-popup .van-calendar__day--selected,
+.date-popup .van-calendar__day--start,
+.date-popup .van-calendar__day--end {
+  width: 36px;
+  height: 38px;
+  margin: 5px auto;
+  border-radius: 4px;
+  color: #FFFFFF !important;
+  background: #00AAA6 !important;
+  line-height: 38px;
+}
+
+.date-popup .van-calendar__day--middle {
+  color: #1D2129;
+  background: #E8FFFB;
+}
+
+.date-popup .van-calendar__month-mark {
+  color: #F2F3F5;
+  font-size: 64px;
+  font-weight: 600;
+}
+
+.date-popup .van-calendar__footer {
+  padding: 12px 12px 20px;
+  background: #FFFFFF;
+}
+
+.date-popup .van-calendar__confirm {
+  height: 44px;
+  border: 0;
+  border-radius: 20px;
+  color: #FFFFFF;
+  background: #22BBB3;
+  font-size: 14px;
+  line-height: 20px;
 }

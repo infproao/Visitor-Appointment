@@ -1,0 +1,3 @@
+<template><section class="empty"><img :src="image" alt=""/><p>{{title}}</p><FigmaButton v-if="actionText" size="normal" :block="false" @click="$emit('action')">{{actionText}}</FigmaButton><slot/></section></template>
+<script setup>import image from'../../assets/empty-state.png';import FigmaButton from'./FigmaButton.vue';defineProps({title:{type:String,default:'暂无预约记录'},actionText:String});defineEmits(['action'])</script>
+<style scoped>.empty{min-height:316px;padding:32px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.empty img{width:120px;height:120px;object-fit:contain}.empty p{margin:16px 0 0;color:#86909C;font:400 14px/22px "PingFang SC",sans-serif}.empty .figma-button{margin-top:16px;min-width:160px}</style>

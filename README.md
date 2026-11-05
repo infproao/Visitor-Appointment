@@ -145,3 +145,17 @@ npm run dev
 - [x] 确认剩余 ⚠️ 待确认项（状态标签色映射已确认、搜索框高度 56px 已确认）
 
 > 全部待办已完成。剩余可选优化：补充访客须知横幅插画、相机/搜索/编辑/删除等图标。
+
+
+## Skill 构建管理
+
+本仓库同时维护 Skill 构建过程和可运行原型：
+
+- `docs/product-status.md`：产品现状和资料缺口。
+- `docs/build-plan.md`：阶段 A-D 构建方案。
+- `docs/context/current.md`：当前进度和下一项任务。
+- `docs/context/decisions.md`：技术和设计决策。
+- `tests/`：需求输入、模拟数据和验证结果。
+- `CHANGELOG.md`：Skill 和原型版本变更。
+
+当前已确认技术方案：Vue3 + Vant 4 + Vite + JavaScript + Vue Router 4 + vue-i18n + 模拟数据。首版只覆盖典型移动端页面，不包含邮件和桌面页面。
