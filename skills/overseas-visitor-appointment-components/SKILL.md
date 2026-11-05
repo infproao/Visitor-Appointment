@@ -35,7 +35,7 @@ author: infproao
 ## 资料读取顺序
 
 1. `references/component-registry.md`；
-2. `references/design-spec-from-figma.md` — **当前规范基准**，第九节「最终规范值」为可落地值；
+2. `references/design-spec-from-figma.md` — **当前规范基准**，第九节「最终规范值」为可落地值；实测范围为同一 Figma 文件的两个页面节点 `1550:3803`「——模板——」与 `1824:42919`「泰国」（24 个业务页面，见第十一节）；
 3. `references/figma-derived-spec.md`；
 4. `references/components.md`；
 5. `references/design-tokens.md` — 早期确认值的历史记录，**冲突处以第 2 项第九节为准**；

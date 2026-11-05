@@ -8,7 +8,8 @@
 ## 工作入口
 
 - Skill 规范：`skills/overseas-visitor-appointment-components/SKILL.md`
-- **设计规范基准：`skills/overseas-visitor-appointment-components/references/design-spec-from-figma.md`（第九节「最终规范值」）**
+- **设计规范基准：`skills/overseas-visitor-appointment-components/references/design-spec-from-figma.md`（第九节「最终规范值」；第十一节为两页范围与 24 个业务页面清单）**
+- **Figma 页面范围**：同一文件 `JRpDmIIybR17xUVA8s9sK4` 的两个节点 —— `1550:3803`「——模板——」（组件与规范画板）、`1824:42919`「泰国」（24 个业务页面）
 - 早期设计变量（历史记录）：`skills/overseas-visitor-appointment-components/references/design-tokens.md`
 - 组件注册表：`skills/overseas-visitor-appointment-components/references/component-registry.md`
 - AI 编码入口：本文件（仓库根 `AGENTS.md`）。`skills/overseas-visitor-appointment-components/AGENTS.md` 目前不存在，待补
