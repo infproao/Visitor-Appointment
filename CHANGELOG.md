@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+### 2026-11-05 新增 Figma 实测设计规范（颜色 / 字号 / 间距 / 圆角 / 字体 / 阴影）
+
+- 新增 `skills/overseas-visitor-appointment-components/references/design-spec-from-figma.md`。
+- 数据来源：Figma REST API 读取 `——模板——` 页 `1550:3803` 全量子树 **5316 个节点**（含 `Color Guidance` `1723:27897`、`Elevation` `1722:27845`、通用组件 `1553:22258`、业务组件 `1623:13302`、特殊处理页面、模板页），逐节点提取 `fills` / `style` / `cornerRadius` / `itemSpacing` / `padding*` / `effects` 并统计频次，全部附 Node ID。
+- 覆盖六类：颜色（色卡 + 语义色 + 渐变 + 组件用色频次）、字体族与字重、字号梯度与行高配对、间距、圆角、**阴影（Elevation 0–4 完整 CSS `box-shadow`，原 `design-tokens.md` 无此项）**。
+- **发现 Color Guidance 色块 fill 与旁边文字标注是两套色板**：Basic 11 项里 9 项不一致、Neutral 8 项里 6 项不一致（如 Primary 色块 `#22BBB3` / 标注 `#00AAA6`，Gray-8 色块 `#1D2129` / 标注 `#323233`）。另有蓝色三值并存、Condition 组三个占位色块、Link 标注 `#576B95` 全文件 0 次等问题，全部列入第八节 14 条待确认清单，**未自行裁决、未改动 `design-tokens.md` 任何已确认值**。
+- 其他实测差异也标为待确认：组件实际用了 10/13/17px 字号、圆角以 4px 为主（145 次）而 16px/24px 极少、间距存在非 4 倍值、`dialog` 实测 16px 圆角与已确认「Popup 20px」不同。
+- **读取限制**：模板页 1965 个节点绑定了 Figma 变量（115 个 VariableID），但 `/variables/local`、`/variables/published`、`/styles`、`/components` 全部返回 403；因此变量/样式的正式 token 名无法读取，文档中的命名均来自画板 TEXT 标注，需补 `file_variables:read` scope 后重读。
+- `design-tokens.md` 仅在文件头加了指向本实测文档的说明与「冲突不自动覆盖」约定，**未改动任何色值 / 尺寸 / 映射**。
+
 ### 2026-11-05 预览交互：点击字段弹日期 + 弹层收进手机画布
 
 - **字段交互**：`FigmaField.vue` 的 `readonly && !textarea` 字段改为整行可点击（原先只有 input 能点），加 `clickable` 按压反馈并统一从根节点 `emit('click')`；预览中「来访日期」绑定 `showDate`，`FigmaDatePicker` 确认后把 `YYYY-MM-DD` 回填到字段。
