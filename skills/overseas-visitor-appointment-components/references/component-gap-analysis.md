@@ -117,6 +117,8 @@
 构建结果：`vite build` 成功（330 modules，无报错）
 
 > 定位方式使用 `margin-left: -187.5px`，不依赖 `transform`，避免与 Vant 底部滑入动画的 `transform` 冲突——已通过 `van-popup-slide-bottom-enter-active` 状态下的实测宽度确认。
+>
+> **后续调整（同日）**：上表的「桌面视口内 375px 居中」已改为「收进 375×812 手机画布内贴底」，因为前者仍让遮罩盖住整个页面，不符合真实手机端点击效果。当前规则见 `CHANGELOG.md` 的「预览交互」一节和 `src/theme.css`：画布内弹层为 `position:absolute` + `width:100%` + `max-height:76%`，视口级 375px 规则只在画布外生效。`FigmaField` 只读字段同时改为整行可点击，点击「来访日期」弹出日期弹层并回填。
 
 ---
 

@@ -1,10 +1,10 @@
 <template>
-  <div class="figma-field" :class="{ textarea }">
+  <div class="figma-field" :class="{ textarea, clickable: readonly && !textarea }" @click="readonly && !textarea && emit('click')">
     <div class="figma-field__title"><i v-if="required">*</i><span>{{ label }}</span></div>
     <div class="figma-field__value">
       <textarea v-if="textarea" :value="modelValue" :placeholder="placeholder" :maxlength="maxlength" @input="emit('update:modelValue', $event.target.value)" />
       <div v-else-if="prefix" class="figma-field__phone"><button type="button" class="figma-field__prefix" @click="emit('prefix-click')">{{ prefix }}<span>⌄</span></button><input :value="modelValue" :placeholder="placeholder" :readonly="readonly" @input="emit('update:modelValue', $event.target.value)" /></div>
-      <input v-else :value="modelValue" :placeholder="placeholder" :readonly="readonly" @click="readonly && emit('click')" @input="emit('update:modelValue', $event.target.value)" />
+      <input v-else :value="modelValue" :placeholder="placeholder" :readonly="readonly" @input="emit('update:modelValue', $event.target.value)" />
       <img v-if="link" class="figma-field__arrow" src="../../assets/field-arrow.svg" alt="" />
     </div>
     <p v-if="error" class="figma-field__error">{{ error }}</p>
@@ -19,6 +19,8 @@ const emit = defineEmits(['update:modelValue', 'click', 'prefix-click'])
 <style scoped>
 .figma-field { min-height: 76px; padding: 10px 0; box-sizing: border-box; border-bottom: 1px solid #F2F3F5; color: #1D2129; }
 .figma-field.textarea { min-height: 100px; }
+.figma-field.clickable { cursor: pointer; }
+.figma-field.clickable:active { background: #F7F8FA; }
 .figma-field__title { min-height: 24px; display: flex; align-items: center; gap: 2px; color: #4E5969; font: 500 16px/24px "PingFang SC", sans-serif; }
 .figma-field__title i { color: #F53F3F; font: 400 14px/24px "PingFang SC", sans-serif; }
 .figma-field__value { min-height: 24px; margin-top: 8px; display: flex; align-items: center; gap: 8px; }

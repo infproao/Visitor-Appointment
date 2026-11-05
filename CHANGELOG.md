@@ -4,6 +4,17 @@
 
 ## [Unreleased]
 
+### 2026-11-05 预览交互：点击字段弹日期 + 弹层收进手机画布
+
+- **字段交互**：`FigmaField.vue` 的 `readonly && !textarea` 字段改为整行可点击（原先只有 input 能点），加 `clickable` 按压反馈并统一从根节点 `emit('click')`；预览中「来访日期」绑定 `showDate`，`FigmaDatePicker` 确认后把 `YYYY-MM-DD` 回填到字段。
+- **弹层呈现改为真实手机端语义**：原先弹层是 `position:fixed` 相对整个浏览器视口、遮罩盖住左侧导航和右侧展示区；现改为收进 **375×812 手机画布**内。
+  - `FigmaComponentGallery.vue`：画布加 `figma-phone` 类、固定 375×812、`position:relative` + `overflow:hidden`；6 个弹层实例从页面根部搬进画布内；切换导航时自动收起所有弹层。
+  - `theme.css`：新增 `.figma-phone .figma-popup-375.van-popup`（`position:absolute`、`width:100%`、`max-height:76%`）和 `.figma-phone .van-overlay`（`position:absolute`），使弹层贴手机屏底部、遮罩只覆盖手机屏；用 `body:has(.figma-phone).van-overflow-hidden` 解除整页锁滚动。
+  - 组件内部弹层（`FigmaVehicleCard → FigmaPopup`、`FigmaMemberSelectionFlow → van-popup`）无需改动：Vant Popup 默认不 teleport，Canvas 内的绝对定位规则自动生效。
+  - `FigmaDatePicker.vue`：日历弹层改 flex 列布局、日历区可滚动、确认按钮 `position:sticky` 常驻底部，避免 812px 内容把手机屏铺满、确认键被推出屏外。
+- **验证**：`npm run build` 通过；浏览器实测 5 个导航弹层 + 2 个组件内弹层全部 `width=375`、贴手机屏底部、`position:absolute`、遮罩尺寸等于 375×812 画布；日期选中 12 日后回填 `2026-11-12` 成功；整页截图核对左侧导航与右侧待确认区不受遮罩影响。
+- **待确认（未自行补成事实）**：日期弹层的 Figma 节点仍缺失，76% 高度和 sticky 确认按钮属于预览可用性处理，不是已确认的 Figma 视觉规范。
+
 ### 2026-11-05 组件预览改版 + 弹层 375px + Figma 组件缺口盘点
 
 - 新增 `skills/overseas-visitor-appointment-components/references/component-gap-analysis.md`：以 Figma REST API 读取 `1553:22258`「通用组件」34 个、`1623:13302`「业务组件」10 个直接子节点，逐项对比 `components/figma/` 下 21 个组件，列出 **8 个缺失组件**、注册表现状问题和 13 条待确认问题。所有映射、缺失和待确认均标注事实来源，未从截图推测样式。

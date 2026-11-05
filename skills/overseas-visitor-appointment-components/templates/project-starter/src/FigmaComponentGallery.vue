@@ -56,7 +56,7 @@
       </section>
 
       <section class="stage">
-        <div class="phone">
+        <div class="phone figma-phone">
           <div class="phone__bar">375 × 812</div>
           <div class="phone__screen">
             <!-- 通用组件 -->
@@ -74,8 +74,9 @@
             </template>
 
             <template v-else-if="current.id === 'FigmaField'">
-              <FigmaField label="来访日期" placeholder="请输入" required readonly link />
+              <FigmaField v-model="visitDate" label="来访日期" placeholder="请选择日期" required readonly link @click="showDate = true" />
               <FigmaField label="手机号" prefix="+84" placeholder="请输入" required />
+              <p class="demo__hint">点击「来访日期」整行 → 日期弹层在手机画布内弹出，选完回填。</p>
             </template>
 
             <template v-else-if="current.id === 'FigmaCheckbox'">
@@ -159,6 +160,21 @@
               </div>
             </template>
           </div>
+
+          <!-- 弹层实例挂在手机画布内：遮罩与弹层只覆盖 375×812 画布 -->
+          <FigmaDatePicker v-model:show="showDate" @confirm="onDateConfirm" />
+          <van-popup v-model:show="showSelect" position="bottom" round class="figma-popup-375">
+            <FigmaSelectList :options="selectOptions" model-value="学术访问" />
+          </van-popup>
+          <FigmaLanguagePopup v-model:show="showLanguage" :languages="languages" model-value="CN" />
+          <FigmaPersonListPopup v-model:show="showPerson" title="入园人员" :members="people" deletable />
+          <FigmaPopup v-model:show="showPopup" title="添加同行人">
+            <FigmaField label="姓名" placeholder="请输入" />
+            <div class="popup-buttons">
+              <FigmaButton variant="secondary">保存并继续</FigmaButton>
+              <FigmaButton>保存</FigmaButton>
+            </div>
+          </FigmaPopup>
         </div>
 
         <aside class="stage__note">
@@ -171,21 +187,6 @@
         </aside>
       </section>
     </main>
-
-    <!-- 弹层实例：统一 375px -->
-    <FigmaDatePicker v-model:show="showDate" />
-    <van-popup v-model:show="showSelect" position="bottom" round class="figma-popup-375">
-      <FigmaSelectList :options="selectOptions" model-value="学术访问" />
-    </van-popup>
-    <FigmaLanguagePopup v-model:show="showLanguage" :languages="languages" model-value="CN" />
-    <FigmaPersonListPopup v-model:show="showPerson" title="入园人员" :members="people" deletable />
-    <FigmaPopup v-model:show="showPopup" title="添加同行人">
-      <FigmaField label="姓名" placeholder="请输入" />
-      <div class="popup-buttons">
-        <FigmaButton variant="secondary">保存并继续</FigmaButton>
-        <FigmaButton>保存</FigmaButton>
-      </div>
-    </FigmaPopup>
   </div>
 </template>
 
@@ -275,6 +276,12 @@ const currentGroupTitle = computed(() =>
 
 function select(item) {
   current.value = item
+  // 切换组件时收起所有弹层，避免上一个组件的弹层留在画布内
+  showDate.value = false
+  showSelect.value = false
+  showLanguage.value = false
+  showPopup.value = false
+  showPerson.value = false
 }
 
 const steps = ['预约信息', '访客信息', '信息确认']
@@ -286,6 +293,14 @@ const showPopup = ref(false)
 const showPerson = ref(false)
 const selected = ref(['1'])
 const selectValue = ref('学术访问')
+const visitDate = ref('')
+
+function onDateConfirm(date) {
+  const d = date instanceof Date ? date : new Date(date)
+  if (Number.isNaN(d.getTime())) return
+  const pad = n => String(n).padStart(2, '0')
+  visitDate.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
 const members = [{ id: '1', name: '张益达' }, { id: '2', name: '何引琪' }, { id: '3', name: '张三' }]
 const languages = [{ code: 'CN', label: '中文' }, { code: 'EN', label: '英语' }, { code: 'TH', label: '泰语' }, { code: 'VN', label: '越南语' }]
 const selectOptions = ['商务', '学术访问', '英语']
@@ -337,10 +352,11 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .stage { max-width: 1000px; margin: 24px auto 0; display: flex; align-items: flex-start; gap: 24px; }
 
 /* 375px 手机画布 */
-.phone { width: 375px; flex: 0 0 375px; box-sizing: border-box; padding: 0 0 8px; border-radius: 20px; background: #FFFFFF; box-shadow: 0 8px 32px rgba(29, 33, 41, .10); overflow: hidden; }
+.phone { position: relative; width: 375px; height: 812px; flex: 0 0 375px; box-sizing: border-box; border-radius: 20px; background: #FFFFFF; box-shadow: 0 8px 32px rgba(29, 33, 41, .10); overflow: hidden; }
 .phone__bar { height: 28px; display: flex; align-items: center; justify-content: center; color: #C9CDD4; background: #F7F8FA; font: 500 11px/28px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; }
-.phone__screen { min-height: 480px; padding: 16px; box-sizing: border-box; }
+.phone__screen { height: calc(100% - 28px); padding: 16px; box-sizing: border-box; overflow-y: auto; }
 .demo__title { margin: 0 0 12px; color: #86909C; font: 400 12px/18px "PingFang SC", sans-serif; }
+.demo__hint { margin: 16px 0 0; padding: 10px 12px; border-radius: 8px; color: #4E5969; background: #F7F8FA; font: 400 12px/20px "PingFang SC", sans-serif; }
 .demo__stack { display: grid; gap: 12px; }
 .demo__row { display: flex; flex-wrap: wrap; gap: 8px; }
 .popup-demo { padding: 16px 0; text-align: center; }

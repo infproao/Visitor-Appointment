@@ -90,6 +90,27 @@ html, body {
   }
 }
 
+/* 组件库预览：弹层收进 375×812 手机画布，模拟真实手机端点击效果。
+   弹层与遮罩相对画布绝对定位，遮罩只盖住手机屏，不再盖住整个页面。 */
+.figma-phone .figma-popup-375.van-popup {
+  position: absolute;
+  width: 100%;
+  max-width: 100%;
+  max-height: 76%;
+  right: auto;
+  left: 0;
+  margin-left: 0;
+}
+
+.figma-phone .van-overlay {
+  position: absolute;
+}
+
+/* 弹层只在手机屏内，不需要锁定整页滚动 */
+body:has(.figma-phone).van-overflow-hidden {
+  overflow: auto !important;
+}
+
 /* 主按钮禁用态：浅青实色 primary-3 */
 .van-button--primary.van-button--disabled {
   background: #79DDD1;   /* primary-3 */
