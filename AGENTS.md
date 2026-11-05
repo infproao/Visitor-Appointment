@@ -1,14 +1,17 @@
 # 海外版访客预约 Skill 仓库规范
 
+> 当前状态（2026-11-05）：旧版 `skills/visitor-appointment-prototype/` 因效果不理想已移除，可从 git 提交 `20b6457` 恢复。
+> 后续以 `skills/overseas-visitor-appointment-components/` 为唯一基底重新搭建；表单页计划用 Figma 组件重写，**尚未完成**。
+
 本仓库用于沉淀“海外版访客预约”原型生成 Skill，不把具体国家字段、接口、正则或审批配置写死为 Skill 固定业务规则。
 
 ## 工作入口
 
-- Skill 规范：`skills/visitor-appointment-prototype/SKILL.md`
-- 组件注册表：`skills/visitor-appointment-prototype/references/component-registry.md`
-- AI 编码入口：`skills/visitor-appointment-prototype/AGENTS.md`
-- 需求输入：`skills/visitor-appointment-prototype/references/requirements-input.md`
-- Figma 反推规格：`skills/visitor-appointment-prototype/references/figma-derived-spec.md`
+- Skill 规范：`skills/overseas-visitor-appointment-components/SKILL.md`
+- 组件注册表：`skills/overseas-visitor-appointment-components/references/component-registry.md`
+- AI 编码入口：本文件（仓库根 `AGENTS.md`）。`skills/overseas-visitor-appointment-components/AGENTS.md` 目前不存在，待补
+- 需求输入：`skills/overseas-visitor-appointment-components/references/requirements-input.md`
+- Figma 反推规格：`skills/overseas-visitor-appointment-components/references/figma-derived-spec.md`
 
 ## 工作边界
 
@@ -24,6 +27,7 @@
 - `tests/`：Skill 任务、输入 fixtures 和验证结果。
 - `scripts/`：发布和打包工具；工具完成验证后再启用。
 - `dist/`：版本 ZIP 输出，不提交依赖和临时文件。
-- `skills/visitor-appointment-prototype/`：当前可加载 Skill 包和 starter。
+- `skills/overseas-visitor-appointment-components/`：当前唯一 Skill 包和 starter。
+- `skills/visitor-appointment-prototype.zip`：历史打包文件（旧版目录已移除，此文件保留作历史参考）。
 
-完整规则以 Skill 目录内的 `AGENTS.md` 和 `SKILL.md` 为准。
+完整规则以 `skills/overseas-visitor-appointment-components/SKILL.md` 为准；本文件为仓库级工作入口。

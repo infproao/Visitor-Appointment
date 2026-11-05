@@ -4,6 +4,31 @@
 
 ## [Unreleased]
 
+### 2026-11-05 旧版 Skill 移除
+
+- 依据用户决定：`skills/visitor-appointment-prototype/` 效果不理想，整体移除；后续以 `skills/overseas-visitor-appointment-components/` 为唯一基底重新搭建，表单页计划用 Figma 组件重写（**尚未完成**）。
+- 移除方式：整个目录（106 个真实文件 + node_modules/dist）移动到**系统废纸篓**，非永久删除；可从废纸篓或 git 提交 `20b6457` 完整恢复。
+- 保留：`skills/visitor-appointment-prototype.zip`（82KB 历史包）未删除。
+- 同步修正：根 `AGENTS.md` 的 6 处工作入口已切到 overseas，并补记当前状态。
+- 运行影响：5173 旧版预览服务已停止；5174 组件库服务保持运行（HTTP 200）。
+
+**待迁移引用（未擅自改写）**
+
+以下引用仍指向已移除目录。因其中混有历史记录，未批量替换，留待重新搭建时统一处理：
+
+| 文件 | 处数 | 性质 |
+|---|---|---|
+| `README.md` | 7 | 当前用法（目录结构 / 加载说明 / Kiro 说明 / 2 处 degit / 续写指令 / 规范入口） |
+| `README.md` | 1 | v1.1.0 更新日志，**历史记录，保留** |
+| `docs/product-status.md` | 1 | 「已反推规格」路径 |
+| `docs/build-plan.md` | 1 | 引用 `references/README.md`（overseas 无此文件，需另定） |
+| `HANDOFF.md` | 1 | 需求输入路径 |
+| `访客预约-Skill构建方案.md` | 1 | Figma 反推规格路径 |
+| `CHANGELOG.md` | 2 | 历史记录，**保留** |
+| `skills/overseas-visitor-appointment-components/SKILL.md` | 1 | 「旧版组件不参与本 Skill」表述，非路径断链，**保留** |
+
+> 另：`README.md` 中「Kiro（字节 AI IDE）」为事实错误（Kiro 由 AWS/Amazon 推出），待一并修正。
+
 ### 2026-11-05 工作快照（已提交至 main）
 
 > 说明：本次是**工作快照提交**，不是正式 Release。
