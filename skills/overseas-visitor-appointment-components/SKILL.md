@@ -35,12 +35,15 @@ author: infproao
 ## 资料读取顺序
 
 1. `references/component-registry.md`；
-2. `references/figma-derived-spec.md`；
-3. `references/components.md`；
-4. `references/design-tokens.md`；
-5. `references/requirements-input.md`；
-6. `references/runtime-conditions.md`；
-7. 用户指定的 Figma Node 和截图。
+2. `references/design-spec-from-figma.md` — **当前规范基准**，第九节「最终规范值」为可落地值；
+3. `references/figma-derived-spec.md`；
+4. `references/components.md`；
+5. `references/design-tokens.md` — 早期确认值的历史记录，**冲突处以第 2 项第九节为准**；
+6. `references/requirements-input.md`；
+7. `references/runtime-conditions.md`；
+8. 用户指定的 Figma Node 和截图。
+
+> **2026-11-05 用户裁决「以设计稿中的为准」**：规范数值一律取 Figma 节点实际渲染属性（`fills` / `style` / `cornerRadius` / `effects` / `itemSpacing` / `padding*`），不取画板说明文字标注、外部海信 token 文件或 Vant 默认值。代码侧 `src/theme.css` 的 `--van-*` 变量迁移**尚未执行**，需前端确认后再改。
 
 ## 强制规则
 
