@@ -13,7 +13,7 @@
       <span v-if="!readonly" class="member-field__arrow">›</span>
     </button>
 
-    <van-popup v-model:show="showPicker" position="bottom" round class="member-popup">
+    <van-popup v-model:show="showPicker" position="bottom" round class="member-popup figma-popup-375">
       <div v-if="popupMode === 'available'" class="member-popup__content">
         <header class="member-popup__header">
           <button type="button" class="header-action" @click="showPicker = false">×</button>

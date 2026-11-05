@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+### 2026-11-05 组件预览改版 + 弹层 375px + Figma 组件缺口盘点
+
+- 新增 `skills/overseas-visitor-appointment-components/references/component-gap-analysis.md`：以 Figma REST API 读取 `1553:22258`「通用组件」34 个、`1623:13302`「业务组件」10 个直接子节点，逐项对比 `components/figma/` 下 21 个组件，列出 **8 个缺失组件**、注册表现状问题和 13 条待确认问题。所有映射、缺失和待确认均标注事实来源，未从截图推测样式。
+- `src/FigmaComponentGallery.vue`：组件预览改为**左侧分组导航（通用 / 业务 / 弹层与组合，共 22 项）+ 右侧展示**；右侧含组件元信息（Figma Node、代码路径、说明）、375px 手机画布和待确认项；新增组件名 / Node ID 搜索。
+- `src/theme.css`：取消 `#app` 的 375px 整体限制（桌面布局需要），新增全局 `.figma-popup-375.van-popup` 规则，弹层固定 **375px** 并水平居中，窄屏降级 `100vw`；使用 `margin-left` 定位避免与 Vant 底部滑入动画的 `transform` 冲突。
+- 5 个弹层组件（`FigmaPopup`、`FigmaDatePicker`、`FigmaLanguagePopup`、`FigmaPersonListPopup`、`FigmaMemberSelectionFlow`）及 Gallery 内裸 `van-popup` 统一追加 `figma-popup-375` 类。
+- 验证：`npm run build` 通过（330 modules）；无头浏览器逐个实测 6 个可见弹层均为 `width=375`、`left=453`（1280 视口居中）；预览页截图核对左导航 / 右展示无错位。预览地址 `http://127.0.0.1:5174/`。
+- **未做**：8 个缺失组件尚未实现。按 `SKILL.md` 约定「组件实现先给计划，确认后才写 `.vue`」，实现顺序已写入缺口分析文档第六节，等待确认。所有组件状态仍为 `pending`（未完成 Figma 截图对照）。
+
 ### 2026-11-05 旧版 Skill 移除
 
 - 依据用户决定：`skills/visitor-appointment-prototype/` 效果不理想，整体移除；后续以 `skills/overseas-visitor-appointment-components/` 为唯一基底重新搭建，表单页计划用 Figma 组件重写（**尚未完成**）。
