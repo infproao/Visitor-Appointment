@@ -1,0 +1,27 @@
+// 2026-11-06 用户裁决：组件名全量去掉 Figma 前缀。
+// 当前 22 个独立组件 + 1 个兼容别名（FlowRecordCard → ApprovalTimeline）。
+export { default as ApprovalRecord } from './ApprovalRecord.vue'
+export { default as ApprovalTimeline } from './ApprovalTimeline.vue'
+export { default as Button } from './Button.vue'
+export { default as Checkbox } from './Checkbox.vue'
+export { default as CardVariants } from './CardVariants.vue'
+export { default as ContentRow } from './ContentRow.vue'
+export { default as DatePicker } from './DatePicker.vue'
+export { default as EmptyState } from './EmptyState.vue'
+export { default as Field } from './Field.vue'
+export { default as InlineInput } from './InlineInput.vue'
+export { default as LanguagePopup } from './LanguagePopup.vue'
+export { default as PersonListPopup } from './PersonListPopup.vue'
+export { default as Popup } from './Popup.vue'
+export { default as QRCode } from './QRCode.vue'
+export { default as RegistrationCard } from './RegistrationCard.vue'
+export { default as SelectList } from './SelectList.vue'
+export { default as Steps } from './Steps.vue'
+export { default as Tabs } from './Tabs.vue'
+export { default as Tag } from './Tag.vue'
+export { default as Uploader } from './Uploader.vue'
+export { default as UserCard } from './UserCard.vue'
+export { default as VehicleCard } from './VehicleCard.vue'
+
+// 兼容别名：审批记录与流程记录已合并为一个组件，此导出只为旧调用方保留，不参与新页面生成。
+export { default as FlowRecordCard } from './FlowRecordCard.vue'

@@ -1,0 +1,22 @@
+<svg width="375" height="486" viewBox="0 0 375 486" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="background" x1="187.5" y1="0" x2="187.5" y2="486" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#20C9BB"/>
+      <stop offset="0.38" stop-color="#65D8CC"/>
+      <stop offset="1" stop-color="#F2F3F5"/>
+    </linearGradient>
+    <filter id="blur" x="-80" y="-80" width="535" height="646" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+  <rect width="375" height="486" fill="url(#background)"/>
+  <g opacity="0.2" filter="url(#blur)">
+    <rect x="-50" y="-24" width="150" height="190" rx="22" fill="#8BE7DF"/>
+    <rect x="122" y="-46" width="122" height="180" rx="22" fill="#00AAA6"/>
+    <rect x="278" y="-28" width="135" height="180" rx="22" fill="#A1EFE7"/>
+    <rect x="14" y="144" width="138" height="162" rx="22" fill="#A4EAE3"/>
+    <rect x="191" y="126" width="125" height="160" rx="22" fill="#2CC8BA"/>
+    <rect x="-28" y="318" width="176" height="190" rx="26" fill="#F7F8FA"/>
+    <rect x="193" y="294" width="180" height="212" rx="26" fill="#E8FFFB"/>
+  </g>
+</svg>
