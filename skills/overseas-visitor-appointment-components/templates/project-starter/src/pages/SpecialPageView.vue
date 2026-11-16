@@ -142,38 +142,42 @@
          与车辆卡片（无车辆时显示「车辆（0）」空态）。 -->
     <section v-else-if="kind === 'approval'" class="approval-view">
       <SecurityHeader title="访客预约" @back="notify('返回')" @close="notify('关闭')" />
-      <div class="approval-view__head">
-        <h2>张三等3月23日因商务洽谈来访海信国际中心</h2>
-        <Tag label="审批中" status="approving" />
-        <div class="approval-view__head-meta">
-          <span>来访人：张三</span>
-          <span>时间：2026/3/23</span>
-          <span>访问园区：瑞嘉工业园区</span>
-          <span>预约编号：VS20250728001</span>
+      <!-- 用户 2026-11-16「访客预约以下都支持滚动」：只固定顶部导航栏与底部操作栏，
+           标题摘要 / 页签 / 内容作为一个整体滚动，滚动可视区不再被摘要和页签挤小。 -->
+      <div class="approval-view__scroll">
+        <div class="approval-view__head">
+          <h2>张三等3月23日因商务洽谈来访海信国际中心</h2>
+          <Tag label="审批中" status="approving" />
+          <div class="approval-view__head-meta">
+            <span>来访人：张三</span>
+            <span>时间：2026/3/23</span>
+            <span>访问园区：瑞嘉工业园区</span>
+            <span>预约编号：VS20250728001</span>
+          </div>
         </div>
-      </div>
-      <!-- 用户 2026-11-15「图2 审批页也有 tab」：页头下补 tabs-line「审批内容 / 审批记录」，
-           「审批记录」用组件库 ApprovalRecord 渲染审批时间线（发起节点 → 产品经理审核 → 部门长审批）。 -->
-      <Tabs v-model="approvalTab" :items="approvalTabs" full :height="40" background="#FFFFFF" />
-      <div class="approval-view__body">
-        <template v-if="currentApprovalTab === approvalTabs[0]">
-          <CollapseItem title="访问事由">
-            <Field label="事由类型" model-value="参观拜访" state="readonly" />
-            <Field label="事由描述" model-value="增程式汽车修改方案" state="readonly" />
-          </CollapseItem>
-          <CollapseItem title="访客信息">
-            <Uploader label="本人照片上传" />
-            <Field label="姓名" model-value="陈明翰" state="readonly" />
-            <Field label="手机号" model-value="+66 12345" state="readonly" />
-            <Field label="公司名称" model-value="VinFast" state="readonly" />
-            <Field label="证件类型" model-value="越南公民身份证" state="readonly" />
-            <Field label="证件号" model-value="52********018" state="readonly" />
-            <button class="approval-view__history-link" type="button" @click="showVisitHistory = true"><IconBox name="info" :size="14" color="#00AAA6" />近一年来访 2 次</button>
-          </CollapseItem>
-          <UserCard state="detail" :members="approvalMembers" count="10" full :padding="16" />
-          <VehicleCard state="detail" :plates="approvalVehicles" count="0" full :padding="16" />
-        </template>
-        <ApprovalRecord v-else :groups="approvalGroups" />
+        <!-- 用户 2026-11-15「图2 审批页也有 tab」：页头下补 tabs-line「审批内容 / 审批记录」，
+             「审批记录」用组件库 ApprovalRecord 渲染审批时间线（发起节点 → 产品经理审核 → 部门长审批）。 -->
+        <Tabs v-model="approvalTab" :items="approvalTabs" full :height="40" background="#FFFFFF" />
+        <div class="approval-view__body">
+          <template v-if="currentApprovalTab === approvalTabs[0]">
+            <CollapseItem title="访问事由">
+              <Field label="事由类型" model-value="参观拜访" state="readonly" />
+              <Field label="事由描述" model-value="增程式汽车修改方案" state="readonly" />
+            </CollapseItem>
+            <CollapseItem title="访客信息">
+              <Uploader label="本人照片上传" />
+              <Field label="姓名" model-value="陈明翰" state="readonly" />
+              <Field label="手机号" model-value="+66 12345" state="readonly" />
+              <Field label="公司名称" model-value="VinFast" state="readonly" />
+              <Field label="证件类型" model-value="越南公民身份证" state="readonly" />
+              <Field label="证件号" model-value="52********018" state="readonly" />
+              <button class="approval-view__history-link" type="button" @click="showVisitHistory = true"><IconBox name="info" :size="14" color="#00AAA6" />近一年来访 2 次</button>
+            </CollapseItem>
+            <UserCard state="detail" :members="approvalMembers" count="10" full :padding="16" />
+            <VehicleCard state="detail" :plates="approvalVehicles" count="0" full :padding="16" />
+          </template>
+          <ApprovalRecord v-else :groups="approvalGroups" />
+        </div>
       </div>
       <div class="approval-view__actions">
         <ActionBar variant="dual" cancel-text="驳回" confirm-text="通过" @cancel="notify('已驳回')" @confirm="notify('审批通过')" />
@@ -638,18 +642,21 @@ function onLanguage(language) {
    画布底部，不随内容滚走；overlay 里用 embedded 让画布撑满手机框，缩略图仍按 812 缩放。 */
 .special-view--approval { height: 812px; min-height: 812px; overflow: hidden; background: #F2F3F5; }
 .special-view--approval.special-view--embedded { height: 100%; min-height: 0; }
-/* 审批页的滚动容器是 section.approval-view（不是根 main）：四段纵向布局在这里落地，
-   操作栏作为非 body 子项固定，只有 body 滚动。 */
+/* 审批页的滚动容器是 section.approval-view（不是根 main）：顶部导航和底部操作栏固定，
+   中间整块（标题摘要 / 页签 / 内容）放进 __scroll 一起滚动，滚动区从 306px 提升到约 579px。
+   两处分隔线：导航栏底 + 摘要底（Tabs 自带下边线，不重复画）。 */
 .approval-view { height: 100%; min-height: 0; display: flex; flex-direction: column; }
-.approval-view > :not(.approval-view__body) { flex: 0 0 auto; }
+.approval-view > :not(.approval-view__scroll) { flex: 0 0 auto; }
+.approval-view :deep(.security-header) { box-shadow: inset 0 -1px 0 #E5E6EB; }
+.approval-view__scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 /* 页头（用户 2026-11-15「审批页少了页头」）：与预约详情页同款——标题 20/28 + 状态标签 +
    来访人 / 时间 / 访问园区 / 预约编号四行 14/22 #86909C，行间 4、与标签间距 8、底部 1px 分隔 */
-.approval-view__head { padding: 16px; box-sizing: border-box; display: grid; gap: 8px; background: #FFFFFF; }
+.approval-view__head { padding: 16px; box-sizing: border-box; display: grid; gap: 8px; background: #FFFFFF; box-shadow: inset 0 -1px 0 #E5E6EB; }
 .approval-view__head h2 { margin: 0; color: #1D2129; font: 600 20px/28px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 /* grid 默认 stretch 会把 Tag 拉成整行色带，标签必须按内容宽度左对齐 */
 .approval-view__head > .figma-tag { justify-self: start; }
 .approval-view__head-meta { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid #F2F3F5; color: #86909C; font: 400 14px/22px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
-.approval-view__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 12px 12px 16px; box-sizing: border-box; display: grid; align-content: start; gap: 12px; }
+.approval-view__body { padding: 12px 12px 16px; box-sizing: border-box; display: grid; align-content: start; gap: 12px; }
 .approval-view__history-link { margin: 4px 0 0; padding: 0; display: inline-flex; align-items: center; gap: 4px; border: 0; color: #00AAA6; background: transparent; font: 400 14px/22px "PingFang SC", sans-serif; cursor: pointer; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .approval-view__actions { position: relative; z-index: 2; max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #FFFFFF; box-shadow: 0 -1px 0 #E5E6EB; }
 .visit-history { display: grid; gap: 12px; }
