@@ -19,7 +19,7 @@
     </button>
     <!-- 2026-11-13 用户「搜索组件加入一个扫码样式」：右侧取景框图标复用 IconBox 的 scan-qr-code，不自绘 SVG -->
     <button v-if="scan" class="figma-search__scan" type="button" aria-label="扫码" @click="emit('scan')">
-      <IconBox name="scan-qr-code" :size="20" color="#86909C" />
+      <IconBox name="scan-frame" :size="20" color="#86909C" />
     </button>
     <slot />
   </div>

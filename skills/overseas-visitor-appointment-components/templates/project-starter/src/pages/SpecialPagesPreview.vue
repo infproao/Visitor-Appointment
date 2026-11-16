@@ -68,8 +68,10 @@ const pages = [
   { id: 'security-detail', title: '安保端详情', description: '页头「详情」+ 预约摘要 + 基础信息 / 审批记录 / 出入记录三页签', component: SecurityDetailPage, at: '安保端 > 详情（1042:17750）' },
   { id: 'companions', title: '泰国同行人', shortTitle: '同行人', status: '同行人', statusType: 'primary', kind: 'companions', component: SpecialPageView, viewKind: 'companions', description: '邀请卡、表单与条款确认' },
   { id: 'companions-expired', title: '同行人 · 链接已过期', shortTitle: '链接已过期', status: '已失效', statusType: 'neutral', kind: 'companions', isNew: true, component: SpecialPageView, viewKind: 'link-expired', description: '邀请文案 + 地址 + 失效空态 + 主色「新建预约」；复用 EmptyState / Button', at: '同行人 > 链接已过期（用户 2026-11-13 截图）' },
-  { id: 'entry-select', title: '入园操作 · 选择人员', shortTitle: '选择人员', status: '入园操作', statusType: 'primary', kind: 'entry', isNew: true, component: SpecialPageView, viewKind: 'entry', stage: 'select', description: '底部弹层：Search + 人员状态 Tag + Checkbox 复选 + 取消 / 下一步', at: '安保端 > 入园操作（用户 2026-11-13 截图）' },
-  { id: 'entry-form', title: '入园操作 · 信息确认', shortTitle: '信息确认', status: '入园操作', statusType: 'primary', kind: 'entry', isNew: true, component: SpecialPageView, viewKind: 'entry', stage: 'form', description: '访客信息折叠区 + Field 入园人员 + Uploader ×2 + FieldCheckbox 检查项 + 备注 + 上一步 / 提交', at: '安保端 > 入园操作（用户 2026-11-13 截图）' },
+  // 用户 2026-11-15「入园操作选择人员下一步是信息确认，不是两个分开的页面」：
+  // 原来拆成「入园操作 · 选择人员」「入园操作 · 信息确认」两张卡，看起来像两个独立页面；
+  // 合并成一张卡，点开就是同一条两步流程（选择人员 → 下一步 → 信息确认），标题跟着步骤切换。
+  { id: 'entry', title: '入园操作（选择人员 → 信息确认）', shortTitle: '入园操作', status: '入园操作', statusType: 'primary', kind: 'entry', isNew: true, component: SpecialPageView, viewKind: 'entry', stage: 'select', description: '底部弹层两步流程：Search + 人员状态 Tag + Checkbox 复选 → 下一步进入信息确认（访客信息折叠区 / 上传 / 检查项 / 备注），第一步勾选的人员回显到第二步', at: '安保端 > 入园操作（用户 2026-11-13 截图）' },
   { id: 'record-page', title: '预约记录页', description: '页头「预约记录」+ 最近 14 天提示条 + 多条预约记录，记录卡复用 AppointmentRecordCard', component: AppointmentRecordPage, at: '用户端 > 预约记录（1083:24323）' }
 ]
 // shallowRef：页面描述里带 component 组件对象，避免被深度响应式包装触发 Vue 性能警告
@@ -94,8 +96,9 @@ function openById(id) { selectedPage.value = pages.find(page => page.id === id) 
    也避免缩略图里的组件弹层挂到错误的手机画布上。点击仍由外层 template-card 按钮接收。 */
 .template-thumbnail { position: relative; height: 240px; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; background: #F7F8FA; pointer-events: none; }
 .template-thumbnail :deep(.page-frame), .template-thumbnail :deep(.home-view), .template-thumbnail :deep(.special-view), .template-thumbnail :deep(.success-page), .template-thumbnail :deep(.record-page), .template-thumbnail :deep(.security-detail) { width: 375px; min-height: 812px; flex: 0 0 375px; transform: scale(.48); transform-origin: top center; }
-/* NEW 标（用户 2026-11-13）：最近新增 / 更新的页面在缩略图右上角打标，方便快速识别哪些是新的 */
-.template-card__new { position: absolute; top: 8px; right: 8px; z-index: 1; padding: 2px 8px; border-radius: 999px; color: #FFFFFF; background: #22BBB3; font: 600 12px/16px "PingFang SC", sans-serif; }
+/* NEW 标（用户 2026-11-13）：最近新增 / 更新的页面在缩略图右上角打标，方便快速识别哪些是新的。
+   用户 2026-11-15「new标签用红色」：从品牌青 #22BBB3 改为工程内红色语义值 #F76560（与「未通过 / 已拒绝」同色）。 */
+.template-card__new { position: absolute; top: 8px; right: 8px; z-index: 1; padding: 2px 8px; border-radius: 999px; color: #FFFFFF; background: #F76560; font: 600 12px/16px "PingFang SC", sans-serif; }
 /* 入园操作两卡缩略图修复（用户 2026-11-13「这俩样式也太离谱了」）：真实页是 812px 深色底 + 弹层贴底，
    缩略图按 scale(.48) 只显示顶部 500px 布局区 → 两张卡几乎全是深色块。
    缩略图里把画布压到 500（375×500×.48 正好铺满 240 高缩略图）、弹层限高同步收窄，

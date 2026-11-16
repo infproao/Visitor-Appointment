@@ -1,13 +1,13 @@
 <template>
-  <PageFrame :title="t('app.title')" variant="detail" :embedded="embedded">
+  <PageFrame :title="t('app.title')" variant="detail" back :embedded="embedded">
     <section class="detail-header-card">
-      <h2>张三等2026/3/23日来访瑞嘉工业园区</h2>
-      <Tag label="审批中" status="warning" />
+      <h2>{{ record.title }}</h2>
+      <Tag :label="record.status" :status="record.statusKey" />
       <div class="detail-header-card__rows">
-        <span>来访人：张三</span>
-        <span>时间：2026/3/23</span>
-        <span>访问园区：瑞嘉工业园区</span>
-        <span>预约编号：VS20250728001</span>
+        <span>来访人：{{ record.visitor }}</span>
+        <span>时间：{{ record.date }}</span>
+        <span>访问园区：{{ record.park }}</span>
+        <span>预约编号：{{ record.number }}</span>
       </div>
       <Tabs v-model="activeTab" :items="tabs" />
     </section>
@@ -46,6 +46,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import ApprovalRecord from '../components/figma/ApprovalRecord.vue'
 import Field from '../components/figma/Field.vue'
 import Tag from '../components/figma/Tag.vue'
@@ -55,6 +56,23 @@ import PageFrame from './PageFrame.vue'
 
 const { t } = useI18n()
 const props = defineProps({ embedded: Boolean })
+const route = useRoute()
+// 用户 2026-11-15「卡片支持点击，打开的是详情页支持返回，样式和预约详情页一致」：
+// 安保端出入登记的记录卡把该条记录通过 query 带进来，标题 / 状态 / 来访人 / 时间 / 园区 / 编号按记录渲染；
+// 直接打开 /appointment/detail 或组件库内嵌预览（无 query）时回落到设计稿里的示例记录。
+const STATUS_KEYS = { 已通过: 'approved', 审批中: 'approving', 未通过: 'rejected', 已取消: 'cancelled', 已过期: 'expired' }
+const record = computed(() => {
+  const status = String(route.query.status || '审批中')
+  return {
+    title: String(route.query.title || '张三等2026/3/23日来访瑞嘉工业园区'),
+    status,
+    statusKey: STATUS_KEYS[status] || 'approving',
+    visitor: String(route.query.visitor || '张三'),
+    date: String(route.query.date || '2026/3/23'),
+    park: String(route.query.park || '瑞嘉工业园区'),
+    number: String(route.query.number || 'VS20250728001')
+  }
+})
 const activeTab = ref('')
 const tabs = computed(() => [t('detail.tabs.basic'), t('detail.tabs.flow')])
 const currentTab = computed(() => activeTab.value || tabs.value[0])

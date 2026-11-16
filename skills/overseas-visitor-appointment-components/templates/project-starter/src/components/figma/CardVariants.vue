@@ -1,15 +1,6 @@
 <template>
   <section class="card-variants">
-    <article class="business-card business-card--visitor-image">
-      <div class="card-photo" aria-hidden="true"><span>访客</span></div>
-      <div class="card-copy">
-        <div class="card-meta"><span>09–09</span><Tag label="已通过" status="success" /></div>
-        <h3>张三等 10 人－车辆2</h3>
-        <p>来访公司：无限进步</p>
-        <p>被访部门：显示事业部</p>
-        <p>预约编号：VS20250728001</p>
-      </div>
-    </article>
+    <VisitorImageCard />
 
     <article class="business-card business-card--visitor">
       <div class="card-meta"><span>09–09</span><Tag label="已通过" status="success" /></div>
@@ -32,6 +23,7 @@
 <script setup>
 import Tag from './Tag.vue'
 import AppointmentRecordCard from './AppointmentRecordCard.vue'
+import VisitorImageCard from './VisitorImageCard.vue'
 
 defineProps({ registration: { type: Object, default: () => ({}) } })
 </script>
@@ -39,9 +31,6 @@ defineProps({ registration: { type: Object, default: () => ({}) } })
 <style scoped>
 .card-variants { width: 343px; display: grid; gap: 16px; }
 .business-card { width: 343px; min-height: 156px; padding: 16px; box-sizing: border-box; border-radius: 12px; color: #1D2129; background: #FFFFFF; }
-.business-card--visitor-image { display: flex; gap: 12px; }
-.card-photo { width: 80px; height: 112px; flex: 0 0 80px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; border-radius: 4px; color: rgba(255,255,255,.85); background: linear-gradient(160deg, #C6D5D3 0%, #8FA9A5 55%, #405D5C 100%); font: 500 12px/20px "PingFang SC", sans-serif; }
-.card-photo span { width: 100%; padding: 4px 0; background: rgba(29,33,41,.28); text-align: center; }
 .card-copy { min-width: 0; flex: 1; }
 .card-meta { min-height: 24px; display: flex; align-items: center; gap: 8px; color: #86909C; font: 400 16px/24px "PingFang SC", sans-serif; }
 .card-meta :deep(.figma-tag) { flex: 0 0 auto; }

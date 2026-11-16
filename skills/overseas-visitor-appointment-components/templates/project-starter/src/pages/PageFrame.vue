@@ -1,6 +1,6 @@
 <template>
   <main class="page-frame" :class="`page-frame--${variant}`">
-    <header class="page-header">
+    <header class="page-header" :class="{ 'page-header--back': back }">
       <button v-if="back" class="page-header__back" type="button" :aria-label="t('common.back')" @click="props.embedded ? emit('back') : router.back()">‹</button>
       <h1>{{ title }}</h1>
       <LocaleSwitcher :outlined="variant === 'detail' || variant === 'form'" />
@@ -32,5 +32,8 @@ const router = useRouter()
 .page-frame--detail .page-header { position: relative; z-index: 2; justify-content: flex-start; background: transparent; }
 .page-frame--detail .page-header h1 { font-size: 24px; line-height: 32px; }
 .page-frame--detail .page-content { padding: 0 16px 16px; }
+/* 详情 / 表单页的标题靠左，返回「‹」占 left 16..40，标题要让出 48 才不会被压住（用户 2026-11-15「支持返回」） */
+.page-frame--detail .page-header--back,
+.page-frame--form .page-header--back { padding-left: 48px; }
 @media (max-width: 375px) { .page-frame { width: 100%; } }
 </style>

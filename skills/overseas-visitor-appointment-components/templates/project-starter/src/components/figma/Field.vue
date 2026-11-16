@@ -4,7 +4,7 @@
     :class="[`figma-field--${effectiveState}`, { textarea, clickable }]"
     @click="clickable && emit('click')"
   >
-    <div class="figma-field__title"><i v-if="required">*</i><span>{{ label }}</span></div>
+    <div class="figma-field__title"><i v-if="required">*</i><span>{{ label }}</span><span v-if="help" class="figma-field__help" aria-hidden="true">?</span></div>
     <div class="figma-field__value">
       <template v-if="members && members.length">
         <div class="figma-field__chips">
@@ -71,6 +71,8 @@ const props = defineProps({
   textarea: Boolean,
   prefix: String,
   error: String,
+  // 用户 2026-11-15 图4：必填 label 后跟一个「?」说明图标；error 为红字提示（必填未填同一条样式）
+  help: Boolean,
   maxlength: [String, Number],
   state: { type: String, default: '' },
   members: { type: Array, default: null },
@@ -100,6 +102,8 @@ const showCount = computed(() => props.textarea && !!props.maxlength)
 .figma-field.clickable:active { background: #F7F8FA; }
 .figma-field__title { min-height: 24px; display: flex; align-items: center; gap: 2px; color: #4E5969; font: 500 16px/24px "PingFang SC", sans-serif; }
 .figma-field__title i { color: #F53F3F; font: 400 14px/24px "PingFang SC", sans-serif; font-style: normal; }
+/* 用户 2026-11-15 图4：label 后的「?」说明图标 16×16 描边圆 + #86909C */
+.figma-field__help { width: 16px; height: 16px; margin-left: 2px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #86909C; border-radius: 50%; color: #86909C; font: 600 12px/14px "PingFang SC", sans-serif; }
 .figma-field__value { min-height: 24px; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
 .figma-field input, .figma-field textarea { width: 100%; min-width: 0; min-height: 24px; padding: 0; border: 0; outline: 0; color: #1D2129; background: transparent; font: 400 16px/24px "PingFang SC", sans-serif; resize: none; appearance: none; }
 .figma-field textarea { min-height: 48px; }
@@ -114,7 +118,8 @@ const showCount = computed(() => props.textarea && !!props.maxlength)
 .figma-field__prefix { min-height: 24px; padding: 0; display: inline-flex; gap: 4px; border: 0; color: #1D2129; background: transparent; font: 400 16px/24px "PingFang SC", sans-serif; }
 .figma-field__prefix span { color: #86909C; font-size: 12px; }
 .figma-field__count { margin: 4px 0 0; color: #4E5969; font: 400 12px/16px "PingFang SC", sans-serif; }
-.figma-field__error { margin: 4px 0 0; color: #F53F3F; font: 400 12px/18px "PingFang SC", sans-serif; }
+/* 报错 / 必填未填（图4）：内容行不变，下面补一行红字 #F53F3F，与内容同字号口径 14/22 */
+.figma-field__error { margin: 4px 0 0; color: #F53F3F; font: 400 14px/22px "PingFang SC", sans-serif; }
 .figma-field__chips { display: flex; flex-wrap: wrap; gap: 8px; padding-right: 20px; }
 .chip { min-height: 28px; padding: 4px 8px; box-sizing: border-box; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #E5E6EB; border-radius: 999px; background: #FFFFFF; font: 400 12px/20px "PingFang SC", sans-serif; }
 .chip__avatar { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #FFFFFF; background: #C9CDD4; font-size: 10px; }

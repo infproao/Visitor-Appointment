@@ -81,6 +81,8 @@
                   <Field label="入园人员" placeholder="请选择" required link state="default" />
                   <Field label="入园人员" :members="chipMembers" required link state="filled" deletable />
                   <Field label="入园人员" :members="chipMembers" required state="readonly" />
+                  <p class="demo__state">报错 · 必填未填（图4）</p>
+                  <Field label="lable" model-value="内容" required help link error="错误信息" />
                 </template>
 
                 <template v-else-if="current.id === 'FieldDate'">
@@ -221,13 +223,7 @@
                   </div>
                   <p class="demo__hint">Figma 1893:20270「input」：视觉是行内状态标签，不是文本输入框。</p>
                 </template>
-                <template v-else-if="current.id === 'SecurityHeader'">
-                  <div class="security-demo">
-                    <SecurityHeader title="详情" @back="securityAction = '返回'" @close="securityAction = '关闭'" />
-                    <p class="security-demo__body">安保端页头：左侧「返回 + 关闭」、居中标题 17/18 w500，下接页面内容。</p>
-                  </div>
-                  <p class="demo__hint">Figma 安保端 &gt; 详情 1042:17750 &gt; navbar-web：44 高白底导航（wrapper pad 12/16、left 56×20 gap16、标题 17/18 w500 #1D2129）；原型不渲染系统状态栏，故只还原 44 高本体。当前操作：{{ securityAction || '未点击' }}</p>
-                </template>
+                <!-- 用户 2026-11-15「导航删除安保端页头」：该演示项已从左侧导航移除（SecurityHeader 组件仍由页面直接使用） -->
 
                 <!-- 业务组件 -->
                 <template v-else-if="current.id === 'UserCard'">
@@ -342,7 +338,6 @@ import Dropdown from './components/figma/Dropdown.vue'
 import MemberSelectionFlow from './components/figma/MemberSelectionFlow.vue'
 import Cascader from './components/figma/Cascader.vue'
 import Dialog from './components/figma/Dialog.vue'
-import SecurityHeader from './components/figma/SecurityHeader.vue'
 import { usePopupTeleport } from './components/figma/usePopupTeleport.js'
 import DesignSpecPanel from './DesignSpecPanel.vue'
 
@@ -390,7 +385,6 @@ const groups = [
       { id: 'Uploader', name: '图片上传', node: '1686:20447 · field-upload 311×132', note: 'Vant 仅提供上传行为', at: '——模板—— > 通用组件 > field-upload' },
       { id: 'EmptyState', name: '空状态', node: '1723:28234 · 311×316', note: '使用本地 no-data 资源', at: '——模板—— > 通用组件 > 空状态' },
       { id: 'Search', name: '搜索框', node: '整合页面 > 泰国 > 搜索园区精确到门 1822:38312 / 安保端-搜索页 1035:8201 / 用户 2026-11-13 扫码截图', note: '两种样式按 #prefix 自动切换：不带下拉 32 高 r17、带前置下拉 40 高 r4；scan prop 增加右侧扫码入口（IconBox scan-qr-code）；trigger = input / debounce / enter，回车始终兜底、输入法组合期间不误发', at: '整合页面 > 泰国 > 搜索园区精确到门 / 安保端 > 搜索页' },
-      { id: 'SecurityHeader', name: '安保端页头', kind: 'demo', node: '1042:17750 > navbar-web（375×88，含状态栏 44）', note: '白底 44 高：左「返回 20×20 + 关闭 20×20」间距 16、标题居中 17/18 w500 #1D2129；图标为 Figma 设计稿原始 path（arrow-left / close）', at: '安保端 > 详情 > navbar-web' },
       { id: 'Dropdown', name: '下拉选择', node: '安保端 · 访客出入登记筛选（宽 80px，最多 5 字超出省略）', note: '触发器 + Popup 底部抽屉选项列表；触发文案超宽省略', at: '安保端 > 访客出入登记 > 筛选' },
       { id: 'Cascader', name: '级联选择', node: '整合页面 > 泰国 > 选择园区 1822:36720 / 搜索园区精确到门 1822:38307', note: '园区 → 门两级；handle + 32 高搜索框 + 44 高层级 tab（无分割线）+ 列表，选中末级回填', at: '整合页面 > 泰国 > 选择园区 / 搜索园区精确到门' },
       { id: 'QRCode', name: '二维码 scan-qr-code', node: '整合页面 > 首页 > scan-qr-code 1747:24918（Arco IconBox 图标）', note: '扫码图标统一由 IconBox 的 scan-qr-code 承载；二维码图片为本地占位资源，假码仅展示用、最小 160', pendingNote: '所用资源是否即 qr-placeholder.png 待确认', at: '整合页面 > 首页 > scan-qr-code' },
@@ -488,7 +482,6 @@ const lastSearchValue = ref('')
 const lastAction = ref('')
 const searchDepartment = ref('全部部门')
 // 安保端页头演示：点「返回 / 关闭」时回显最后一次操作，证明事件真的透出
-const securityAction = ref('')
 const dropdownValue = ref('全部部门')
 const departments = ['全部部门', '显示事业部', '营销部', '研发中心']
 const cascadeValue = ref(['rayong', 'south'])

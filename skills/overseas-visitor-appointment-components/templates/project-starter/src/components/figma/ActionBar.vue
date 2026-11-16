@@ -19,7 +19,7 @@
     </template>
 
     <template v-else>
-      <button class="figma-action-bar__auth" type="button" @click="emit('scan')">
+      <button class="figma-action-bar__auth" type="button" :aria-label="authLabel" :title="authLabel" @click="emit('scan')">
         <IconBox name="scan-qr-code" :size="20" color="#1D2129" />
         <span>Additional<br />Authorization</span>
       </button>
@@ -47,13 +47,15 @@ const emit = defineEmits(['cancel', 'confirm', 'selection', 'scan'])
 const CONFIRM_DEFAULTS = { dual: '提交', selection: '确定', auth: '下一步' }
 const resolvedConfirm = computed(() => props.confirmText || CONFIRM_DEFAULTS[props.variant] || '提交')
 const resolvedSelectionText = computed(() => props.selectionText || `已选择：${props.count}项`)
+// 附加授权入口在 84px 窄列里，英文两行是图标主标签的文字补充；无障碍名称给中文，避免读屏念出拆行英文
+const authLabel = '附加授权'
 </script>
 
 <style scoped>
 .figma-action-bar { width: 100%; display: grid; align-items: center; gap: 12px; }
 .figma-action-bar--dual { grid-template-columns: 1fr 1fr; }
 .figma-action-bar--selection { grid-template-columns: minmax(0, 1fr) 1fr; }
-.figma-action-bar--auth { grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr); }
+.figma-action-bar--auth { grid-template-columns: 84px minmax(0, 1fr) minmax(0, 1fr); }
 
 /* 已选摘要：完整文案 + 换行，不做 ellipsis；箭头固定 14×14 不参与压缩 */
 .figma-action-bar__selection { min-width: 0; display: flex; align-items: center; gap: 8px; padding: 0; border: 0; color: #22BBB3; background: transparent; text-align: left; font: 400 14px/20px "PingFang SC", sans-serif; cursor: pointer; }
@@ -61,7 +63,10 @@ const resolvedSelectionText = computed(() => props.selectionText || `已选择�
 .figma-action-bar__summary { min-width: 0; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .figma-action-bar__selection svg { flex: 0 0 auto; }
 
-/* 附加授权：20×20 扫码图标 + 两行完整文案（不截断）。
-   高度预算（用户 2026-11-13 底部操作规范：16px padding、总高 ≤80px）：20 图标 + 28 两行文字 + 32 上下 padding = 80，图标与文字之间不额外加 gap */
-.figma-action-bar__auth { min-width: 0; padding: 0; display: grid; justify-items: center; gap: 0; border: 0; color: #1D2129; background: transparent; text-align: center; font: 400 12px/14px "PingFang SC", sans-serif; cursor: pointer; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+/* 附加授权：设计稿（图2）里它是「图标 + 两行英文」的纯入口，不画底色、不描边；
+   两行英文是多语言适配的写法（用户 2026-11-15 明确保留），所以不改成中文、不缩成单行。
+   之前几轮误当成「按钮没有背景」，上一版给过 #F2F3F5 / #E5E6EB 两块底色，这一版按设计去掉。
+   高度口径：图标 20 + 两行文字 26 = 46 ≤ 页脚 80 减去上下 16 padding 的 48，文字完整显示、不被裁掉。 */
+.figma-action-bar__auth { min-width: 0; height: 48px; padding: 0 4px; box-sizing: border-box; display: grid; justify-items: center; align-content: center; gap: 0; border: 0; border-radius: 8px; color: #1D2129; background: transparent; text-align: center; font: 400 11px/13px "PingFang SC", sans-serif; cursor: pointer; white-space: normal; overflow: hidden; }
+.figma-action-bar__auth:hover { background: rgba(29, 33, 41, .06); }
 </style>

@@ -20,6 +20,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+// 2026-11-15：刻度常量收进 design-rules.mjs，与 scripts/spec-audit.mjs 共用同一口径
+import { VALID_FONT_SIZES, BANNED_PADDING_PX, ALLOWED_SPACING_DECIMALS } from './design-rules.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const SELF_ROOT = path.resolve(HERE, '..')
@@ -33,9 +35,7 @@ const targetArg = getArg('--target')
 const TARGET = targetArg ? path.resolve(targetArg) : SELF_ROOT
 const EXTERNAL = Boolean(targetArg)
 
-const VALID_FONT_SIZES = new Set([12, 13, 14, 16, 18, 20, 24])
-const BANNED_PADDING = new Set([13, 23])
-const ALLOWED_SPACING_DECIMALS = false // 间距不含小数
+// 字号 / padding / 间距小数三组口径见 scripts/design-rules.mjs（与 spec-audit.mjs 共用）
 
 const walk = (dir, exts, out = []) => {
   if (!fs.existsSync(dir)) return out
@@ -70,7 +70,7 @@ for (const f of files) {
     for (const m of line.matchAll(/padding(?:-(?:top|right|bottom|left))?\s*:\s*([^;{}]+)/g)) {
       for (const v of m[1].matchAll(/(\d+(?:\.\d+)?)px/g)) {
         const n = Number(v[1])
-        if (BANNED_PADDING.has(n)) push(rel(f), i + 1, 'padding', `${n}px`, '9.7 裁决 padding 不用 13 / 23')
+        if (BANNED_PADDING_PX.has(n)) push(rel(f), i + 1, 'padding', `${n}px`, '9.7 裁决 padding 不用 13 / 23')
       }
     }
     // 间距小数（itemSpacing / gap / margin）

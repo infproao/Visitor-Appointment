@@ -291,3 +291,35 @@ body:has(.figma-phone).van-overflow-hidden {
 
 /* 成员选择 Popup：在组件预览手机画布中保持 375 宽和顶部 80px 留白。 */
 .figma-phone .member-popup.figma-popup-375.van-popup { position: absolute; width: 100%; left: 0; margin-left: 0; display: flex; flex-direction: column; height: calc(100% - 80px); max-height: calc(100% - 80px); overflow: hidden; }
+
+/* 滚动条统一规格（用户 2026-11-15：「滚动条太粗了不要上下箭头，滚动条颜色用 gray4」）
+   gray-4 = #C9CDD4；细槽 4px、无两端箭头、轨道透明。Firefox 走 scrollbar-width/color。 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #C9CDD4 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #C9CDD4;
+  border-radius: 2px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #86909C;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}

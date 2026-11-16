@@ -51,18 +51,30 @@
       </div>
       <div class="security-live__list">
         <p class="security-live__count">搜索结果 · {{ filteredSecurityRecords.length }} 条</p>
-        <AppointmentRecordCard v-for="record in filteredSecurityRecords" :key="record.number" :record="record" @qr="notify('扫码核验：' + record.number)" />
+        <!-- 用户 2026-11-15：安保端出入登记用业务卡片样式①「带图片摘要」（泰国安保端），不再用用户端预约记录卡 -->
+        <VisitorImageCard
+          v-for="record in filteredSecurityRecords"
+          :key="record.number"
+          :date="record.date"
+          :title="record.title"
+          :status="record.status"
+          :company="record.park"
+          :department="record.department"
+          :number="record.number"
+          @open="openRecord(record)"
+        />
         <p v-if="!filteredSecurityRecords.length" class="security-live__empty">没有匹配的来访记录</p>
       </div>
     </section>
 
     <!-- 入园操作（安保端，2026-11-13 两张截图）：两步底部弹层，内容全部复用组件库组件，不新建页面 .vue。
-         stage="select" = 搜索 + 人员复选；stage="form" = 访客信息折叠区 + 上传 + 检查项复选 + 备注。 -->
+         stage="select" = 搜索 + 人员复选；下一步 = 信息确认（同一条流程的第二步，不再是两个分开的页面）。
+         用户 2026-11-15：标题按步骤切换（入园操作 → 信息确认），第二步「入园人员」回显第一步勾选的人。 -->
     <section v-else-if="kind === 'entry'" class="entry-page">
       <div class="entry-sheet">
-        <span class="sheet__handle" aria-hidden="true"></span>
         <header class="entry-sheet__header">
-          <h2>入园操作</h2>
+          <span class="sheet__handle" aria-hidden="true"></span>
+          <h2>{{ entryStage === 'select' ? '入园操作' : '信息确认' }}</h2>
           <button type="button" aria-label="关闭" @click="notify('已关闭入园操作')"><IconBox name="close" :size="14" color="#1D2129" /></button>
         </header>
 
@@ -73,10 +85,12 @@
               v-for="person in filteredEntryPeople"
               :key="person.id"
               class="entry-person"
+              :class="{ 'entry-person--disabled': isEntryDisabled(person) }"
               role="button"
               tabindex="0"
-              @click="toggleEntryPerson(person.id)"
-              @keydown.enter="toggleEntryPerson(person.id)"
+              :aria-disabled="isEntryDisabled(person)"
+              @click="selectEntryPerson(person)"
+              @keydown.enter="selectEntryPerson(person)"
             >
               <span class="entry-person__avatar" :class="{ 'entry-person__avatar--photo': person.photo }">{{ person.name.slice(0, 1) }}</span>
               <div class="entry-person__info">
@@ -88,7 +102,12 @@
                 <p v-if="person.hint" class="entry-person__hint">{{ person.hint }}</p>
               </div>
               <span class="entry-person__check" @click.stop>
-                <Checkbox :model-value="entrySelected.includes(person.id)" size="lg" @update:model-value="toggleEntryPerson(person.id)" />
+                <Checkbox
+                  :model-value="entrySelected.includes(person.id)"
+                  :disabled="isEntryDisabled(person)"
+                  size="lg"
+                  @update:model-value="selectEntryPerson(person)"
+                />
               </span>
             </div>
           </div>
@@ -118,24 +137,43 @@
       </div>
     </section>
 
-    <!-- 审批页（2026-11-13 截图）：访客信息字段与用户详情页一致 + 动作栏（支持操作）+ 近一年来访 → 来访历史记录弹层 -->
+    <!-- 审批页（2026-11-13 截图）：访客信息字段与用户详情页一致 + 动作栏（支持操作）+ 近一年来访 → 来访历史记录弹层
+         用户 2026-11-15「审批页少了页头和车辆卡片」：补上预约详情页同款页头（标题 / 状态 / 来访人·时间·园区·编号）
+         与车辆卡片（无车辆时显示「车辆（0）」空态）。 -->
     <section v-else-if="kind === 'approval'" class="approval-view">
       <SecurityHeader title="访客预约" @back="notify('返回')" @close="notify('关闭')" />
+      <div class="approval-view__head">
+        <h2>张三等3月23日因商务洽谈来访海信国际中心</h2>
+        <Tag label="审批中" status="approving" />
+        <div class="approval-view__head-meta">
+          <span>来访人：张三</span>
+          <span>时间：2026/3/23</span>
+          <span>访问园区：瑞嘉工业园区</span>
+          <span>预约编号：VS20250728001</span>
+        </div>
+      </div>
+      <!-- 用户 2026-11-15「图2 审批页也有 tab」：页头下补 tabs-line「审批内容 / 审批记录」，
+           「审批记录」用组件库 ApprovalRecord 渲染审批时间线（发起节点 → 产品经理审核 → 部门长审批）。 -->
+      <Tabs v-model="approvalTab" :items="approvalTabs" full :height="40" background="#FFFFFF" />
       <div class="approval-view__body">
-        <CollapseItem title="访问事由">
-          <Field label="事由类型" model-value="参观拜访" state="readonly" />
-          <Field label="事由描述" model-value="增程式汽车修改方案" state="readonly" />
-        </CollapseItem>
-        <CollapseItem title="访客信息">
-          <Uploader label="本人照片上传" />
-          <Field label="姓名" model-value="陈明翰" state="readonly" />
-          <Field label="手机号" model-value="+66 12345" state="readonly" />
-          <Field label="公司名称" model-value="VinFast" state="readonly" />
-          <Field label="证件类型" model-value="越南公民身份证" state="readonly" />
-          <Field label="证件号" model-value="52********018" state="readonly" />
-          <button class="approval-view__history-link" type="button" @click="showVisitHistory = true"><IconBox name="info" :size="14" color="#00AAA6" />近一年来访 2 次</button>
-        </CollapseItem>
-        <UserCard state="detail" :members="approvalMembers" count="10" full :padding="16" />
+        <template v-if="currentApprovalTab === approvalTabs[0]">
+          <CollapseItem title="访问事由">
+            <Field label="事由类型" model-value="参观拜访" state="readonly" />
+            <Field label="事由描述" model-value="增程式汽车修改方案" state="readonly" />
+          </CollapseItem>
+          <CollapseItem title="访客信息">
+            <Uploader label="本人照片上传" />
+            <Field label="姓名" model-value="陈明翰" state="readonly" />
+            <Field label="手机号" model-value="+66 12345" state="readonly" />
+            <Field label="公司名称" model-value="VinFast" state="readonly" />
+            <Field label="证件类型" model-value="越南公民身份证" state="readonly" />
+            <Field label="证件号" model-value="52********018" state="readonly" />
+            <button class="approval-view__history-link" type="button" @click="showVisitHistory = true"><IconBox name="info" :size="14" color="#00AAA6" />近一年来访 2 次</button>
+          </CollapseItem>
+          <UserCard state="detail" :members="approvalMembers" count="10" full :padding="16" />
+          <VehicleCard state="detail" :plates="approvalVehicles" count="0" full :padding="16" />
+        </template>
+        <ApprovalRecord v-else :groups="approvalGroups" />
       </div>
       <div class="approval-view__actions">
         <ActionBar variant="dual" cancel-text="驳回" confirm-text="通过" @cancel="notify('已驳回')" @confirm="notify('审批通过')" />
@@ -264,6 +302,7 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ActionBar from '../components/figma/ActionBar.vue'
 import AppointmentRecordCard from '../components/figma/AppointmentRecordCard.vue'
+import ApprovalRecord from '../components/figma/ApprovalRecord.vue'
 import Button from '../components/figma/Button.vue'
 import Cascader from '../components/figma/Cascader.vue'
 import Checkbox from '../components/figma/Checkbox.vue'
@@ -280,8 +319,11 @@ import Search from '../components/figma/Search.vue'
 import SecurityHeader from '../components/figma/SecurityHeader.vue'
 import SelectList from '../components/figma/SelectList.vue'
 import Tag from '../components/figma/Tag.vue'
+import Tabs from '../components/figma/Tabs.vue'
 import Uploader from '../components/figma/Uploader.vue'
 import UserCard from '../components/figma/UserCard.vue'
+import VehicleCard from '../components/figma/VehicleCard.vue'
+import VisitorImageCard from '../components/figma/VisitorImageCard.vue'
 import { usePopupTeleport } from '../components/figma/usePopupTeleport.js'
 import emptyImage from '../assets/empty-state.png'
 
@@ -343,11 +385,12 @@ const securityDepartments = ['全部部门', '显示事业部', '营销部', '�
 const securityKeyword = ref('')
 // 只有 Search 发出 search 事件时才更新查询词，正好把「即时 / 防抖 / 回车」三种触发差异体现出来
 const securityQuery = ref('')
+// date 单独成字段（卡片左上角日期），title 只留访客摘要；公司 / 部门 / 编号照设计稿三行
 const securityRecords = [
-  { title: '09-09 张三等 10人 - 车辆2', status: '已通过', park: '无限进步', host: '显示事业部', number: 'VS20250728001', department: '显示事业部', parkValue: 'rayong', gate: 'south' },
-  { title: '09-08 李四等 4人 - 车辆1', status: '审批中', park: 'VinFast', host: '营销部', number: 'VS20250728002', department: '营销部', parkValue: 'rayong', gate: 'south' },
-  { title: '09-07 王五等 2人', status: '已通过', park: '海信显示', host: '研发中心', number: 'VS20250728003', department: '研发中心', parkValue: 'rayong', gate: 'north' },
-  { title: '09-06 陈明翰 1人 - 车辆1', status: '未通过', park: 'VinFast', host: '营销部', number: 'VS20250728004', department: '营销部', parkValue: 'dongnai', gate: 'main' }
+  { date: '09-09', title: '张三等 10人 - 车辆2', status: '已通过', park: '无限进步', host: '显示事业部', number: 'VS20250728001', department: '显示事业部', parkValue: 'rayong', gate: 'south' },
+  { date: '09-08', title: '李四等 4人 - 车辆1', status: '审批中', park: 'VinFast', host: '营销部', number: 'VS20250728002', department: '营销部', parkValue: 'rayong', gate: 'south' },
+  { date: '09-07', title: '王五等 2人', status: '已通过', park: '海信显示', host: '研发中心', number: 'VS20250728003', department: '研发中心', parkValue: 'rayong', gate: 'north' },
+  { date: '09-06', title: '陈明翰 1人 - 车辆1', status: '未通过', park: 'VinFast', host: '营销部', number: 'VS20250728004', department: '营销部', parkValue: 'dongnai', gate: 'main' }
 ]
 const filteredSecurityRecords = computed(() => {
   const q = securityQuery.value.trim().toLowerCase()
@@ -356,14 +399,45 @@ const filteredSecurityRecords = computed(() => {
     const deptOk = securityDepartment.value === '全部部门' || record.department === securityDepartment.value
     const parkOk = !park || record.parkValue === park
     const gateOk = !gate || record.gate === gate
-    const keywordOk = !q || [record.title, record.status, record.park, record.host, record.number].join(' ').toLowerCase().includes(q)
+    const keywordOk = !q || [record.date, record.title, record.status, record.park, record.host, record.number].join(' ').toLowerCase().includes(q)
     return deptOk && parkOk && gateOk && keywordOk
   })
 })
 
+// 用户 2026-11-15（第二轮 ⑦ / 第三轮 ⑥）：
+// · 安保端出入登记点卡 → 进「安保端详情」（模板 id security-detail / 路由 /security/detail）
+// · 用户端预约记录点卡 → 进「预约详情页」（模板 id appointment-detail / 路由 /appointment/detail）
+// 两条都带 query 把当前这条记录的标题 / 状态 / 编号带过去，详情页按 query 渲染，缺省回落到 mock。
+function openRecord(record) {
+  if (props.embedded) {
+    emit('navigate', 'security-detail')
+    return
+  }
+  router.push({
+    path: '/security/detail',
+    query: {
+      title: record.title,
+      status: record.status,
+      number: record.number
+    }
+  })
+}
+
 // 审批页：访客信息字段与用户详情页一致；「近一年来访 2 次」打开来访历史记录弹层
 const showVisitHistory = ref(false)
+// 页头下的 tabs-line（用户 2026-11-15 截图 2）：审批内容 / 审批记录
+const approvalTabs = ['审批内容', '审批记录']
+const approvalTab = ref('')
+const currentApprovalTab = computed(() => approvalTab.value || approvalTabs[0])
+// 审批记录时间线：与截图 2 的节点一致（发起节点 / 产品经理审核 / 部门长审批）
+const approvalGroups = [
+  { id: 'start', title: '发起节点', records: [{ id: 's1', approver: { name: '冯易' }, status: 'pending', statusLabel: '提交申请', comment: '提交流程', handledAt: '2016-07-11 10:00' }] },
+  { id: 'pm', title: '产品经理审核', records: [{ id: 'p1', approver: { name: '郭星睿' }, status: 'approved', statusLabel: '通过', comment: '同意开展相关培训活动', handledAt: '2016-07-11 10:00' }] },
+  { id: 'head', title: '部门长审批', records: [{ id: 'h1', approver: { name: '郭星睿' }, status: 'approved', statusLabel: '通过', comment: '同意开展相关培训活动', handledAt: '2016-07-11 10:00' }] }
+]
 const approvalMembers = Array.from({ length: 10 }, (_, index) => ({ id: `a${index}`, name: index === 0 ? '何方' : `同行人${index + 1}` }))
+// 该笔预约没有登记车辆，车辆卡片走详情态空列表，显示「车辆（0）」
+const approvalVehicles = []
 const visitHistory = [
   { date: '2026/8/23来访', status: '已到访', statusKey: 'approved', approver: '张三', count: 4, desc: '与市场部团队洽谈 2026 年第二季度合作项目的详细方案，涵盖生产排期、交付时间节点，并实地参观生产车间与成品仓库' },
   { date: '2026/2/23来访', status: '未到访', statusKey: 'approving', approver: '张三', count: 4, desc: '会同生产部对新投产线进行验收与试运行测试，核查质量标准及安全规范，确认达标后方可正式投入使用' }
@@ -389,10 +463,26 @@ function toggleEntryPerson(id) {
     ? entrySelected.value.filter(item => item !== id)
     : [...entrySelected.value, id]
 }
-const entryMembers = [
-  { id: 'm1', name: '张益达' }, { id: 'm2', name: '张益达' }, { id: 'm3', name: '张益达' },
-  { id: 'm4', name: '张益达' }, { id: 'm5', name: '张益达' }
-]
+// 用户 2026-11-15「图1 未认证、已入园的无法勾选」＝ 这两类人员按设计稿是禁用态：
+// 已入园的人已经在厂区内、未认证的人没有授权，都不能进本单入园名单，所以勾选框灰底、整行点不动。
+function isEntryDisabled(person) {
+  return person.tags.some(tag => tag.label === '已入园' || tag.label === '未认证')
+}
+function selectEntryPerson(person) {
+  if (isEntryDisabled(person)) {
+    const reason = person.tags.some(tag => tag.label === '已入园') ? '已入园' : '未认证，需先补同意授权'
+    notify(`「${person.name}」${reason}，无法勾选`)
+    return
+  }
+  toggleEntryPerson(person.id)
+}
+// 入园人员回显第一步勾选的人（用户 2026-11-15：原来写死 5 个「张益达」）；
+// 工作台直接把 stage 定到第二步、没有任何勾选时，回落到列表里的前两位，避免出现空名单。
+const entryMembers = computed(() => {
+  const picked = entryPeople.filter(person => entrySelected.value.includes(person.id))
+  const source = picked.length ? picked : entryPeople.slice(0, 2)
+  return source.map(person => ({ id: person.id, name: person.name }))
+})
 const entryCheckOptions = ['已完成证件核验', '已完成危险品确认', '已完成违禁物检查']
 const entryChecks = ref([])
 const entryRemark = ref('')
@@ -506,18 +596,29 @@ function onLanguage(language) {
 .entry-page { min-height: 812px; display: flex; flex-direction: column; justify-content: flex-end; }
 /* 表单步内容较长：把弹层限定在画布内，让白卡内部滚动，底部「上一步 / 提交」始终可见 */
 .entry-sheet { display: flex; flex-direction: column; max-height: calc(812px - 80px); overflow: hidden; border-radius: 20px 20px 0 0; background: #F2F3F5; }
-.entry-sheet > .sheet__handle { flex: 0 0 auto; }
 /* 弹层规范（用户 2026-11-13）：容器 #F2F3F5；action-header 默认 64px、标题不截断隐藏、超出换行；
    内容区左右 16px、内容卡 padding 16、块间距 12（list/form 自带间距不叠加）；
-   底部操作 16px padding、总高度最高 80px。与 Popup.vue 组件保持同一口径。 */
-.entry-sheet__header { flex: 0 0 auto; position: relative; min-height: 64px; height: auto; padding: 20px 60px 12px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: transparent; }
+   底部操作 16px padding、总高度最高 80px。与 Popup.vue 组件保持同一口径。
+   用户 2026-11-15「间距不对」：把手原先是 header 外的独立元素（12+20 外边距），叠加 header 的 20px 上内边距，
+   把手到标题实际空了 40px。改用 Popup 同一口径：把手绝对定位在 header 顶部 8px，header 上内边距 8px，
+   把手 8..12、标题 24..48，两者间距回到 12px。
+   用户 2026-11-15「图4 标题和卡片间间距 8px」：标题 24..48 后，原 12px 下内边距 + 卡片 12px 外边距 = 24px，
+   压成 header 下内边距 0 + 卡片上外边距 8px，标题底到卡片正好 8px（其余三边仍是 16/12 的既有口径）。 */
+/* 用户 2026-11-15「入园操作标题默认 36px，和卡片的间距 8px」（Figma 标注 36 / 8）：
+   · 标题行固定 36 高，标题文字在行内垂直居中；
+   · 标题行距卡片上边 8px（.entry-card margin-top 8，仍是既有口径）；
+   · 把手绝对定位在标题行上方的 8px 处，close 按钮撑满标题行高、贴右 16px。
+   相比上一版的 16px 上内边距 + 24px 行高（标题块只有 24 高），这一版标题块正好 36。 */
+.entry-sheet__header { flex: 0 0 auto; position: relative; height: 36px; margin-top: 20px; padding: 0 60px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: transparent; }
+.entry-sheet__header > .sheet__handle { position: absolute; top: -12px; left: 50%; margin: 0; transform: translateX(-50%); }
 .entry-sheet__header h2 { margin: 0; color: #1D2129; text-align: center; font: 600 18px/24px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
-.entry-sheet__header button { position: absolute; top: 14px; right: 16px; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; color: #86909C; background: #FFFFFF; cursor: pointer; }
-.entry-card { flex: 1 1 auto; min-height: 0; overflow-y: auto; margin: 12px 16px; padding: 16px; box-sizing: border-box; border-radius: 12px; background: #FFFFFF; }
+.entry-sheet__header button { position: absolute; top: 0; right: 16px; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; color: #86909C; background: #FFFFFF; cursor: pointer; }
+.entry-card { flex: 1 1 auto; min-height: 0; overflow-y: auto; margin: 8px 16px 12px; padding: 16px; box-sizing: border-box; border-radius: 12px; background: #FFFFFF; }
 /* 表单步的内容白卡由 CollapseItem 自身提供 padding，避免双层内边距 */
 .entry-card--plain { padding: 0; }
 .entry-person-list { margin-top: 12px; display: grid; gap: 16px; }
 .entry-person { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.entry-person--disabled { cursor: not-allowed; }
 .entry-person__avatar { width: 32px; height: 32px; flex: 0 0 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #86909C; background: #F2F3F5; font: 400 14px/20px "PingFang SC", sans-serif; }
 .entry-person__avatar--photo { color: #FFFFFF; background: #5A9E9B; }
 .entry-person__info { min-width: 0; flex: 1; }
@@ -527,10 +628,20 @@ function onLanguage(language) {
 .entry-person__hint { margin: 4px 0 0; color: #86909C; font: 400 13px/20px "PingFang SC", sans-serif; }
 .entry-person__check { flex: 0 0 auto; padding-top: 6px; }
 /* 页脚只负责留白：底部操作 16px padding、总高度最高 80px（含 padding），内容垂直居中 */
-.entry-sheet__footer { flex: 0 0 auto; max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #FFFFFF; }
+/* 用户 2026-11-15「图1 底部操作栏没有背景，如图2」：设计稿的底部操作栏底色是 gray-2 #F2F3F5，
+   原来这里是白底 #FFFFFF，看起来像「操作栏没有背景」。改成 #F2F3F5 后与弹层容器同色，
+   只在按钮区域靠按钮本身区分（附加授权是纯图标 + 两行英文，不留底色）。 */
+.entry-sheet__footer { flex: 0 0 auto; max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #F2F3F5; }
 
 /* ============ 审批页 / 来访历史记录（2026-11-13 截图） ============ */
 .special-view--approval { background: #F2F3F5; }
+/* 页头（用户 2026-11-15「审批页少了页头」）：与预约详情页同款——标题 20/28 + 状态标签 +
+   来访人 / 时间 / 访问园区 / 预约编号四行 14/22 #86909C，行间 4、与标签间距 8、底部 1px 分隔 */
+.approval-view__head { padding: 16px; box-sizing: border-box; display: grid; gap: 8px; background: #FFFFFF; }
+.approval-view__head h2 { margin: 0; color: #1D2129; font: 600 20px/28px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+/* grid 默认 stretch 会把 Tag 拉成整行色带，标签必须按内容宽度左对齐 */
+.approval-view__head > .figma-tag { justify-self: start; }
+.approval-view__head-meta { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid #F2F3F5; color: #86909C; font: 400 14px/22px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .approval-view__body { padding: 12px 12px 16px; box-sizing: border-box; display: grid; gap: 12px; }
 .approval-view__history-link { margin: 4px 0 0; padding: 0; display: inline-flex; align-items: center; gap: 4px; border: 0; color: #00AAA6; background: transparent; font: 400 14px/22px "PingFang SC", sans-serif; cursor: pointer; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .approval-view__actions { max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #FFFFFF; }
@@ -612,7 +723,9 @@ function onLanguage(language) {
 .special-content { padding: 12px 16px 32px; box-sizing: border-box; }
 .success-content { padding-top: 80px; }
 .success-card { padding: 16px; border-radius: 12px; background: #FFFFFF; text-align: center; }
-.success-icon { width: 56px; height: 56px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; border-radius: 999px; color: #FFFFFF; background: #23C343; font-size: 36px; }
+/* 成功页对勾：字面色值走设计字号集合（原先 36px 不在 12/13/14/16/18/20/24 集合内，
+   check-tokens 会拦；这里收到 24，圆形 56 不变，视觉上对勾居中即可） */
+.success-icon { width: 56px; height: 56px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; border-radius: 999px; color: #FFFFFF; background: #23C343; font-size: 24px; }
 .success-card h2 { margin: 0; font: 600 20px/28px "PingFang SC", sans-serif; }
 .success-card > p { margin: 8px 0 0; color: #4E5969; font: 400 14px/22px "PingFang SC", sans-serif; }
 

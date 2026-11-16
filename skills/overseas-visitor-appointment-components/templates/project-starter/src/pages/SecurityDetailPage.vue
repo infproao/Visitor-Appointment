@@ -12,13 +12,13 @@
     <SecurityHeader title="详情" @back="goHome" @close="goHome" />
 
     <section class="sd-head">
-      <h1 class="sd-head__title">张三等7月29日因商务洽谈来访显示事业部</h1>
+      <h1 class="sd-head__title">{{ headTitle }}</h1>
       <div class="sd-head__meta">
-        <InlineInput text="已通过" background="#23C343" :before="false" :after="false" :padding="10" :weight="600" />
+        <InlineInput :text="headStatus" background="#23C343" :before="false" :after="false" :padding="10" :weight="600" />
         <Tag variant="soft" icon="user" label="10" />
         <Tag variant="soft" icon="car" label="2" />
       </div>
-      <p class="sd-head__number">预约编号：VS20250728001</p>
+      <p class="sd-head__number">预约编号：{{ headNumber }}</p>
     </section>
 
     <Tabs v-model="activeTab" :items="tabs" full :height="40" background="#FFFFFF" />
@@ -60,7 +60,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ApprovalRecord from '../components/figma/ApprovalRecord.vue'
 import ApprovalTimeline from '../components/figma/ApprovalTimeline.vue'
 import Field from '../components/figma/Field.vue'
@@ -76,6 +76,13 @@ import VehicleCard from '../components/figma/VehicleCard.vue'
 const props = defineProps({ embedded: Boolean })
 const emit = defineEmits(['back'])
 const router = useRouter()
+
+// 用户 2026-11-15「安保端出入登记的详情是安保端详情」：从出入登记列表点进来时用 query 带本条的
+// 标题 / 状态 / 编号，页头按真实记录渲染；直接打开模板页（无 query）仍回落到设计稿文案。
+const route = useRoute()
+const headTitle = computed(() => route.query.title || '张三等7月29日因商务洽谈来访显示事业部')
+const headStatus = computed(() => route.query.status || '已通过')
+const headNumber = computed(() => route.query.number || 'VS20250728001')
 
 function goHome() {
   if (props.embedded) emit('back')

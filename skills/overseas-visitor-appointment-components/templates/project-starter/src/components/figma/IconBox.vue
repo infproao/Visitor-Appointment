@@ -38,6 +38,15 @@ const icons = {
 }
 // Figma 节点名为 scan-qr-code（首页扫码图标）；scan 作为旧调用兼容别名保留。
 icons['scan-qr-code'] = icons.scan
+// 扫码取景框（用户 2026-11-15：「图三扫码icon不对」）：
+// 设计稿 06-安保端 搜索框内图标放大比对为「四角折角 + 居中横线」的取景框，不是首页那颗二维码图标；
+// 该节点未随 SVG 导出，按设计稿 24 盒几何重绘（角/线厚度 2.2、折角臂长 7），仅用于搜索框扫码入口。
+icons['scan-frame'] = {
+  viewBox: '0 0 24 24',
+  opacity: 1,
+  rule: '',
+  d: 'M3 3h7v2.2H3z M14 3h7v2.2h-7z M3 18.8h7V21H3z M14 18.8h7V21h-7z M3 3h2.2v7H3z M18.8 3H21v7h-2.2z M3 14h2.2v7H3z M18.8 14H21v7h-2.2z M3 10.9h18v2.2H3z'
+}
 const meta = computed(() => icons[props.name] || icons.info)
 // 单一 v-bind 组装 path 属性：fill-rule 与 transform 可能同时出现，两个无参 v-bind 会被编译器判为重复属性
 const pathAttrs = computed(() => {
