@@ -48,6 +48,7 @@ import deleteIcon from '../../assets/figma-vehicle-delete.svg'
 
 const props = defineProps({
   plate: { type: String, default: '' },
+  // 支持 string[]（每项为车牌）或 { id, plate, type }[]；组件内部统一归一化
   plates: { type: Array, default: () => [] },
   state: { type: String, default: 'default' },
   count: { type: [String, Number], default: null },
@@ -62,7 +63,20 @@ const showMoreList = ref(false)
 const draft = ref('')
 const plateField = ref(null)
 const popupTitle = ref('添加车辆')
-const rows = computed(() => props.plates.length ? props.plates : props.plate ? [{ id: 'current', plate: props.plate }] : [])
+// 页面可能只传车牌字符串（如安保端详情 `['39A-12345']`），也可能传
+// `{ id, plate, type }` 对象；组件统一归一化，避免模板里出现空行。
+function normalizeVehicle(item, index) {
+  if (!item || typeof item === 'string') {
+    const plate = item || ''
+    return { id: plate || `vehicle-${index}`, plate }
+  }
+  const plate = item.plate || item.plateNumber || item.licensePlate || item.plateNo || ''
+  return { ...item, id: item.id || plate || `vehicle-${index}`, plate }
+}
+const rows = computed(() => {
+  if (props.plates.length) return props.plates.map(normalizeVehicle)
+  return props.plate ? [normalizeVehicle(props.plate, 0)] : []
+})
 const readonlyRows = computed(() => rows.value.map(item => ({ id: item.id || item.plate, name: item.plate })))
 const showAdd = computed(() => props.state !== 'detail')
 const showMore = computed(() => props.state === 'detail' && Number(props.count || props.plates.length) >= 10)

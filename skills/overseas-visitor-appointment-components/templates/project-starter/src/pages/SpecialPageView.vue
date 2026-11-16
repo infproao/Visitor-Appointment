@@ -1,5 +1,5 @@
 <template>
-  <main class="special-view" :class="`special-view--${kind}`">
+  <main class="special-view" :class="[`special-view--${kind}`, { 'special-view--embedded': embedded }]">
     <!-- 渐变青 header：泰国同行人（文字深色，设计稿为黑字叠青色背景图）；链接已过期页复用同一标题栏 -->
     <header v-if="kind === 'companions' || kind === 'link-expired'" class="grad-header">
       <h1>{{ kind === 'link-expired' ? '访客预约' : title }}</h1>
@@ -634,7 +634,14 @@ function onLanguage(language) {
 .entry-sheet__footer { flex: 0 0 auto; max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #F2F3F5; }
 
 /* ============ 审批页 / 来访历史记录（2026-11-13 截图） ============ */
-.special-view--approval { background: #F2F3F5; }
+/* 审批页是「页头 + 页签 + 可滚动内容 + 底部操作栏」的四段结构：操作栏固定在 375×812
+   画布底部，不随内容滚走；overlay 里用 embedded 让画布撑满手机框，缩略图仍按 812 缩放。 */
+.special-view--approval { height: 812px; min-height: 812px; overflow: hidden; background: #F2F3F5; }
+.special-view--approval.special-view--embedded { height: 100%; min-height: 0; }
+/* 审批页的滚动容器是 section.approval-view（不是根 main）：四段纵向布局在这里落地，
+   操作栏作为非 body 子项固定，只有 body 滚动。 */
+.approval-view { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+.approval-view > :not(.approval-view__body) { flex: 0 0 auto; }
 /* 页头（用户 2026-11-15「审批页少了页头」）：与预约详情页同款——标题 20/28 + 状态标签 +
    来访人 / 时间 / 访问园区 / 预约编号四行 14/22 #86909C，行间 4、与标签间距 8、底部 1px 分隔 */
 .approval-view__head { padding: 16px; box-sizing: border-box; display: grid; gap: 8px; background: #FFFFFF; }
@@ -642,9 +649,9 @@ function onLanguage(language) {
 /* grid 默认 stretch 会把 Tag 拉成整行色带，标签必须按内容宽度左对齐 */
 .approval-view__head > .figma-tag { justify-self: start; }
 .approval-view__head-meta { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid #F2F3F5; color: #86909C; font: 400 14px/22px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
-.approval-view__body { padding: 12px 12px 16px; box-sizing: border-box; display: grid; gap: 12px; }
+.approval-view__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 12px 12px 16px; box-sizing: border-box; display: grid; align-content: start; gap: 12px; }
 .approval-view__history-link { margin: 4px 0 0; padding: 0; display: inline-flex; align-items: center; gap: 4px; border: 0; color: #00AAA6; background: transparent; font: 400 14px/22px "PingFang SC", sans-serif; cursor: pointer; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
-.approval-view__actions { max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #FFFFFF; }
+.approval-view__actions { position: relative; z-index: 2; max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #FFFFFF; box-shadow: 0 -1px 0 #E5E6EB; }
 .visit-history { display: grid; gap: 12px; }
 .visit-history__total { margin: 0; color: #86909C; font: 400 13px/20px "PingFang SC", sans-serif; }
 .visit-history__card { padding: 16px; box-sizing: border-box; border-radius: 12px; background: #FFFFFF; display: grid; gap: 8px; }

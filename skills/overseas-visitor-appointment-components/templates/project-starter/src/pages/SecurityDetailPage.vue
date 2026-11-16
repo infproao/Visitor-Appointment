@@ -99,7 +99,10 @@ const people = [
   { id: 'p7', name: '周伟林' }, { id: 'p8', name: '赵英艳' }, { id: 'p9', name: '赵学海' },
   { id: 'p10', name: '冯修岚' }
 ]
-const cars = ['39A-12345', '39A-67890']
+const cars = [
+  { id: 'v1', plate: '39A-12345' },
+  { id: 'v2', plate: '39A-67890' }
+]
 const showMore = ref(false)
 const moreOptions = people.map(item => item.name)
 
