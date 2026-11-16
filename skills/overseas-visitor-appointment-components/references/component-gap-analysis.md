@@ -119,7 +119,7 @@
 6. `component-registry.md` 第 6 节写「已创建的页面模板位于 `templates/project-starter/src/pages/`」，实测该目录**不存在**。
 7. `references/quality-gates.md` 引用 `page-generation-decision-tree.md`，该文件在 `references/` 下**不存在**。
 8. 交接说明要求读取 `skills/overseas-visitor-appointment-components/AGENTS.md`，实测该文件**不存在**。
-9. `README.md`、`docs/`、`HANDOFF.md`、`访客预约-Skill构建方案.md` 仍有旧版 `visitor-appointment-prototype` 路径引用；`README.md` 中「Kiro（字节 AI IDE）」为事实错误，Kiro 属 AWS/Amazon。以上均为历史记录，本轮未擅自改写。
+9. `README.md` 已于 2026-11-16 按当前目录结构重写；`HANDOFF.md`、`访客预约-Skill构建方案.md` 与旧版 `visitor-appointment-prototype.zip` 已删除。`CHANGELOG.md` 中的旧路径保留为历史记录。
 
 ---
 

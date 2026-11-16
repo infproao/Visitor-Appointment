@@ -105,4 +105,3 @@ npm run gate     # 组件形态门禁 + 设计 token 越界检查
 
 - 不提交 `node_modules/`、`dist/`、`.DS_Store`、Vite 时间戳临时文件与各类同步冲突副本。
 - 画面相关改动先在本地预览确认；纯文档改动也先同步说明，再提交。
-- 历史旧包 `skills/visitor-appointment-prototype.zip` 仅作归档，不再作为实现来源。

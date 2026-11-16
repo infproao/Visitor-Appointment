@@ -339,7 +339,7 @@
 | CSS 类名 | `figma-button` / `figma-field` / `figma-popup-375` 等**全部保留**，样式、测试选择器、DOM 快照不受影响 |
 | 目录名 | `src/components/figma/` **保留**，路径前缀不变，只改最后一段文件名 |
 | 展示名 | 画廊展示名本来就已去前缀，本轮把代码名对齐，二者不再有「`Button` vs `FigmaButton.vue`」的分歧 |
-| 文档 | 本文件、`SKILL.md`、`AGENTS.md`、`component-gap-analysis.md`、`CHANGELOG.md`、`docs/context/current.md` 同步更新；`README.md` / `HANDOFF.md` 等历史文档仍含旧 `Figma*` 引用，属历史记录、暂未批量改写 |
+| 文档 | 本文件、`SKILL.md`、`AGENTS.md`、`component-gap-analysis.md`、`CHANGELOG.md`、`docs/context/current.md` 同步更新；`CHANGELOG.md` 等历史记录仍含旧 `Figma*` 引用，属历史记录、暂未批量改写 |
 | 收益 | 组件名与 Figma 原件名一致，页面模板调用更直观，消除双重命名；后续 P1–P3 新组件直接按原件名命名 |
 
 ## 八、Figma 组件优先模式（规则有效）

@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### 2026-11-16 清理旧版历史文件
+
+- 删除 `HANDOFF.md`、`访客预约-Skill构建方案.md` 与 `skills/visitor-appointment-prototype.zip`（旧版 26 文件包）；三个文件均不在 Skill 运行路径中，删除后 `npm run gate` 与 `npm run build` 通过。
+- 同步移除 `README.md`、`AGENTS.md`、`component-gap-analysis.md`、`component-registry.md` 中对旧包与旧路径的现行引用；`CHANGELOG.md` 自身历史条目保留。
+
 ### 2026-11-09 叠层偏移 12px + 关闭按钮移到右侧 + 圆形按钮里的 icon 居中（**本地改动，未提交未推送，待预览确认**）
 
 - **用户原话**：「偏移12px,关闭放在右侧 ... 为啥icon不在圆的中心」（附截图）。
