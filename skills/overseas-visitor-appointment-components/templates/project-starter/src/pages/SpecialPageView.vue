@@ -157,7 +157,9 @@
         </div>
         <!-- 用户 2026-11-15「图2 审批页也有 tab」：页头下补 tabs-line「审批内容 / 审批记录」，
              「审批记录」用组件库 ApprovalRecord 渲染审批时间线（发起节点 → 产品经理审核 → 部门长审批）。 -->
-        <Tabs v-model="approvalTab" :items="approvalTabs" full :height="40" background="#FFFFFF" />
+        <div class="approval-tabs-sticky">
+          <Tabs v-model="approvalTab" :items="approvalTabs" full :height="40" background="#FFFFFF" />
+        </div>
         <div class="approval-view__body">
           <template v-if="currentApprovalTab === approvalTabs[0]">
             <CollapseItem title="访问事由">
@@ -180,8 +182,49 @@
         </div>
       </div>
       <div class="approval-view__actions">
-        <ActionBar variant="dual" cancel-text="驳回" confirm-text="通过" @cancel="notify('已驳回')" @confirm="notify('审批通过')" />
+        <ActionBar variant="dual" cancel-text="驳回" confirm-text="通过" @cancel="openReject" @confirm="openApprove" />
       </div>
+      <!-- 审批动作确认（用户 2026-11-16 裁决 1+2）：驳回必须填原因；通过用 Popup 确认，
+           通过意见默认「同意」，可改可留默认。两个弹层都复用 Popup / Field / Button。 -->
+      <Popup v-model:show="showReject" title="驳回原因">
+        <div class="approval-popup">
+          <div class="approval-popup__card">
+            <p class="approval-popup__summary">张三 · 2026/3/23 · 瑞嘉工业园区</p>
+            <Field
+              v-model="rejectReason"
+              label="驳回原因"
+              required
+              textarea
+              :maxlength="200"
+              placeholder="请填写驳回原因"
+              :error="rejectError"
+              @update:model-value="rejectError = ''"
+            />
+          </div>
+          <div class="popup-actions">
+            <Button variant="secondary" @click="showReject = false">取消</Button>
+            <Button @click="submitReject">确认驳回</Button>
+          </div>
+        </div>
+      </Popup>
+      <Popup v-model:show="showApprove" title="通过审批">
+        <div class="approval-popup">
+          <div class="approval-popup__card">
+            <p class="approval-popup__summary">张三 · 2026/3/23 · 瑞嘉工业园区</p>
+            <Field
+              v-model="approveComment"
+              label="通过意见"
+              textarea
+              :maxlength="200"
+              placeholder="默认：同意"
+            />
+          </div>
+          <div class="popup-actions">
+            <Button variant="secondary" @click="showApprove = false">取消</Button>
+            <Button @click="submitApprove">确认通过</Button>
+          </div>
+        </div>
+      </Popup>
     </section>
 
     <!-- 同行人链接已过期（2026-11-13 截图）：白卡 + EmptyState 失效空态 + 主色「新建预约」；不新建页面 .vue -->
@@ -429,6 +472,36 @@ function openRecord(record) {
 
 // 审批页：访客信息字段与用户详情页一致；「近一年来访 2 次」打开来访历史记录弹层
 const showVisitHistory = ref(false)
+// 审批动作弹层（用户 2026-11-16 裁决）：驳回必填原因；通过意见默认「同意」
+const showReject = ref(false)
+const showApprove = ref(false)
+const rejectReason = ref('')
+const rejectError = ref('')
+const approveComment = ref('同意')
+
+function openReject() {
+  rejectReason.value = ''
+  rejectError.value = ''
+  showReject.value = true
+}
+function submitReject() {
+  const reason = rejectReason.value.trim()
+  if (!reason) {
+    rejectError.value = '请填写驳回原因'
+    return
+  }
+  showReject.value = false
+  notify(`已驳回：${reason}`)
+}
+function openApprove() {
+  approveComment.value = '同意'
+  showApprove.value = true
+}
+function submitApprove() {
+  const comment = approveComment.value.trim() || '同意'
+  showApprove.value = false
+  notify(`审批通过：${comment}`)
+}
 // 页头下的 tabs-line（用户 2026-11-15 截图 2）：审批内容 / 审批记录
 const approvalTabs = ['审批内容', '审批记录']
 const approvalTab = ref('')
@@ -656,7 +729,14 @@ function onLanguage(language) {
 /* grid 默认 stretch 会把 Tag 拉成整行色带，标签必须按内容宽度左对齐 */
 .approval-view__head > .figma-tag { justify-self: start; }
 .approval-view__head-meta { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid #F2F3F5; color: #86909C; font: 400 14px/22px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+/* 页签吸顶（用户 2026-11-16 裁决 3）：滚动到页签后固定在导航栏下方，长内容里也能随时切换。
+   吸顶放在页面自己的包裹层上，不给 Tabs 组件加 position，避免触发「页面覆盖组件布局」门禁。 */
+.approval-tabs-sticky { position: sticky; top: 0; z-index: 1; }
 .approval-view__body { padding: 12px 12px 16px; box-sizing: border-box; display: grid; align-content: start; gap: 12px; }
+.approval-popup { display: grid; gap: 12px; }
+.approval-popup__card { padding: 12px 16px; border-radius: 12px; background: #FFFFFF; }
+.approval-popup__card :deep(.figma-field) { box-shadow: none; }
+.approval-popup__summary { margin: 0 0 4px; color: #86909C; font: 400 14px/22px "PingFang SC", sans-serif; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .approval-view__history-link { margin: 4px 0 0; padding: 0; display: inline-flex; align-items: center; gap: 4px; border: 0; color: #00AAA6; background: transparent; font: 400 14px/22px "PingFang SC", sans-serif; cursor: pointer; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .approval-view__actions { position: relative; z-index: 2; max-height: 80px; padding: 16px; box-sizing: border-box; display: flex; align-items: center; background: #FFFFFF; box-shadow: 0 -1px 0 #E5E6EB; }
 .visit-history { display: grid; gap: 12px; }
