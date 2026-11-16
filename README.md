@@ -14,7 +14,19 @@
 
 ## 快速开始
 
-### 只起可运行工程
+### 分享 / 安装 Skill（给 AI 用，推荐）
+
+```bash
+npx degit infproao/Visitor-Appointment/skills/overseas-visitor-appointment-components my-skill
+```
+
+拿到的是 **Skill 本体**：`SKILL.md`、`references/`、`templates/project-starter/`。把 `my-skill` 作为 Skill 加载到 Kiro / WorkBuddy，入口是 `my-skill/SKILL.md`；之后把需求交给 AI，Skill 会按流程用 `templates/project-starter/` 搭建项目。
+
+GitHub 目录：https://github.com/infproao/Visitor-Appointment/tree/main/skills/overseas-visitor-appointment-components
+
+> 这条只拉 Skill，不会自动生成项目；要直接得到一个能跑的工程，用下面的「直接起可运行工程」。
+
+### 直接起可运行工程（不装 Skill）
 
 ```bash
 npx degit infproao/Visitor-Appointment/skills/overseas-visitor-appointment-components/templates/project-starter my-app
