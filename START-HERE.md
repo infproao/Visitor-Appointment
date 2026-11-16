@@ -40,9 +40,8 @@ npm run dev          # Vite，默认 http://localhost:5173
 
 > 读根目录 `AGENTS.md` 与 `skills/overseas-visitor-appointment-components/SKILL.md`，按 `references/component-registry.md` 的实现来源补 P1 组件 `Search`，先在 Figma（文件 `JRpDmIIybR17xUVA8s9sK4`）定位节点并逐属性读出尺寸/padding/gap/圆角/fill/stroke/文字，写进注释，再实现 `.vue`，最后用浏览器回读校验，差值 >1px 视为不通过。找不到节点就标 `pending`，不要用相似组件类推，不要用 Vant 默认值填空。
 
-## 六、两处已知的过期说明（我未擅自改）
+## 六、README 状态
 
-- 根 `README.md` 第 36 / 50 行仍指向旧目录 `skills/visitor-appointment-prototype/`，本仓库实际是 `skills/overseas-visitor-appointment-components/`。
-- 根 `README.md` 第 42 行把 Kiro 写成「字节 AI IDE」；Kiro 是 AWS 的产品。
+根 `README.md` 已于 2026-11-16 按当前目录结构重写：旧的 `visitor-appointment-prototype/` 路径、`manifest.yaml`、`skills/.../AGENTS.md` 等失效引用已移除，版本同步为 `0.3.0`。
 
-需要我把这两处一并改正，或再补一份 Kiro 原生 `.kiro/steering/*.md`（`inclusion: always` 指向 `AGENTS.md`），说一声即可。
+文档与仓库不一致时，以 `AGENTS.md` 和 `SKILL.md` 为准；发现新的过期说明直接改 README，不再在 README 里保留历史口径。
