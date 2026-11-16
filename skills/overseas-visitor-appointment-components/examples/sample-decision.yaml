@@ -1,0 +1,48 @@
+# 样例需求逐页决策表
+
+> 对应 `examples/sample-requirement.yaml`；按 `references/page-generation-decision-tree.md` G0–G5 产出，交 `page-generation-sop.md` 执行。
+> 生成日期：2026-11-10；目标端 `visitor`；国家配置为「越南」（仅配置，不写死字段组合）。
+
+decision:
+  request: "examples/sample-requirement.yaml"
+  client: visitor
+  g0_input: passed
+  pages:
+    - page: visitor-home
+      branch: A
+      template: HomePage.vue
+      route: "/"
+      components: [Button, IconBox, Popup, LanguagePopup]
+      files: []                      # 套模板，本轮无需改动文件
+      reason: "page id 命中模板工作台，字段 / 语言 / 资源均可由配置注入"
+    - page: appointment-success-simple
+      branch: B
+      template: SuccessPage.vue
+      route: "/appointment/success"
+      components: [Popup, Button]
+      files:
+        - "src/pages/SuccessPage.vue"   # 追加一个注册组件 Button 跳转新页面
+        - "src/i18n.js"
+      reason: "模板命中，但需新增「确认访客须知」入口，只改页面组合，不复制组件样式"
+    - page: visitor-regulations-confirm
+      branch: C
+      template: null
+      route: "/regulations/confirm"
+      components: [Field, Checkbox, Button, Popup, Dialog]
+      files:
+        - "src/pages/RegulationsConfirmPage.vue"
+        - "src/router.js"
+        - "src/i18n.js"
+        - "src/ComponentGallery.vue"
+      reason: "无模板，但所需组件全部在注册表 2.0 表；页面只做布局 + 组件编排 + 数据"
+  excluded:
+    - page: security-scan
+      branch: E
+      reason: "真实扫码能力超出前端 mock 范围，不生成代码、不编造数据"
+
+gates_mapping:
+  requirement: "G0 输入校验：client / pages / country / languages / fields / assets / prototype 齐全；visitorPhone 的 confirmationStatus=proposed，只做输入不写正则"
+  template: "A / B 分支已判模板匹配度；C 分支未重新设计已有模板"
+  component: "依赖全部来自 component-registry.md 2.0；无原生控件、无默认 Vant 视觉、无组件内样式复制"
+  visual: "375 画布、设计稿背景图 bg-image-2.svg、协议链接 #00AAA6、Dialog 311 宽、仅上下滚动"
+  runtime: "npm run build + CDP 真实点击 + console 断言"

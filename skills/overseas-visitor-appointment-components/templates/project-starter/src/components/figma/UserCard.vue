@@ -6,10 +6,13 @@
       add-label="添加同行人"
       :show-add="showAdd"
       :show-more="showMore"
+      :full="full"
+      :padding="padding"
       @add="openAdd"
       @more="openMore"
     >
-      <div v-for="member in rows" :key="member.id || member.name" class="user-card-row">
+      <!-- 用户 2026-11-10 裁决：同行人列表最多展示 5 个，其余通过「更多」进入已选/人员列表查看；人名统一 16px。 -->
+      <div v-for="member in visibleRows" :key="member.id || member.name" class="user-card-row">
         <span class="avatar">{{ (member.name || '?').slice(0, 1) }}</span>
         <span class="name">{{ member.name }}</span>
         <Tag v-if="member.status" :label="member.status" status="primary" size="small" />
@@ -22,20 +25,21 @@
 
     <Popup v-model:show="showEdit" :title="popupTitle">
       <div class="popup-form-card">
-        <Field v-model="draft" label="姓名" placeholder="请输入" />
+        <Field ref="nameField" v-model="draft" label="姓名" placeholder="请输入" />
       </div>
-      <div class="popup-actions">
+      <!-- 阻止按钮 mousedown 抢焦点：否则 input 先 blur，手机键盘会收起再弹回 -->
+      <div class="popup-actions" @mousedown.prevent>
         <Button variant="secondary" @click="saveAndContinue">保存并继续</Button>
         <Button @click="save">保存</Button>
       </div>
     </Popup>
 
-    <PersonListPopup v-model:show="showMoreList" title="同行人" :count="count || rows.length" :members="rows" closeable />
+    <PersonListPopup v-model:show="showMoreList" title="同行人" :count="totalCount" :members="rows" closeable />
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import Button from './Button.vue'
 import Field from './Field.vue'
 import ListCard from './ListCard.vue'
@@ -51,16 +55,23 @@ const props = defineProps({
   state: { type: String, default: 'default' },
   members: { type: Array, default: () => [] },
   count: { type: [String, Number], default: null },
-  editable: Boolean
+  editable: Boolean,
+  // 透传给 ListCard：页面级宽度 / 内边距差异，避免页面用 CSS 覆盖组件
+  full: Boolean,
+  padding: { type: Number, default: 12 }
 })
 const emit = defineEmits(['update:name', 'edit', 'remove', 'add', 'more', 'save', 'save-continue'])
 const showEdit = ref(false)
 const showMoreList = ref(false)
 const draft = ref('')
+const nameField = ref(null)
 const popupTitle = ref('添加同行人')
 const rows = computed(() => props.members.length ? props.members : props.name ? [{ id: 'current', name: props.name, status: props.status }] : [])
+const MAX_VISIBLE = 5
+const visibleRows = computed(() => rows.value.slice(0, MAX_VISIBLE))
+const totalCount = computed(() => Math.max(Number(props.count || 0), rows.value.length))
 const showAdd = computed(() => props.state !== 'detail')
-const showMore = computed(() => props.state === 'detail' && Number(props.count || props.members.length) >= 10)
+const showMore = computed(() => props.state === 'detail' && totalCount.value > MAX_VISIBLE)
 
 function openAdd() {
   draft.value = ''
@@ -85,9 +96,12 @@ function save() {
   showEdit.value = false
 }
 function saveAndContinue() {
-  emit('update:name', draft.value)
-  emit('save-continue', draft.value)
-  showEdit.value = false
+  const value = draft.value
+  emit('update:name', value)
+  emit('save-continue', value)
+  // 用户 2026-11-12：弹层保持打开、输入框清空后重新聚焦，手机键盘不收起，可直接连续添加
+  draft.value = ''
+  nextTick(() => nameField.value?.$el?.querySelector('input')?.focus())
 }
 </script>
 

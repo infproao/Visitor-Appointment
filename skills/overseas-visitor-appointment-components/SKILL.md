@@ -1,90 +1,144 @@
 ---
 name: overseas-visitor-appointment-components
 display_name: 海外版访客预约 Figma 组件库
-description: 将海外版访客预约 Figma 设计组件沉淀为可调用的 Vue3 组件，供后续需求生成前端原型。
-version: 0.1.0
+description: 海外版访客预约 Figma 设计资产 + Vue3 组件库 + 可运行工程脚手架 + 页面模板；输入结构化需求后识别已有页面 / 组件并直接调用，产出 375 手机端前端原型。
+version: 0.3.0
 author: infproao
 ---
 
 # 海外版访客预约 Figma 组件库 Skill
 
-## 定位
+## 一、触发条件
 
-本 Skill 只沉淀 Figma 设计组件、设计 Token、组件状态和组件预览，不包含业务页面、页面路由或后端代码。
+命中以下任一意图时使用本 Skill：
 
-## 输出范围
+- 生成 / 修改海外版访客预约的 375 手机端前端原型页面；
+- 查询或复用本组件库的组件、页面模板、设计变量；
+- 按 Figma 设计稿沉淀新组件 / 新页面；
+- 校验已生成原型是否复用了组件库（跑 `npm run gate`）。
 
-- Vue3 组件；
-- Figma CSS视觉；
-- Vant基础行为封装；
-- 本地Figma资源；
-- 组件注册表；
-- 组件独立预览；
-- 前端 mock 数据。
+**交付物**：前端 mock 原型（页面、路由、组件调用、本地资源）。不含数据库、服务端 API、后端鉴权、真实扫码 / 二维码 / 短信 / 审批流、生产部署配置。
 
-不包含：
+## 二、资料读取（按原始结构回归，2026-11-13）
 
-- 业务页面模板；
-- 页面路由；
-- 数据库；
-- 服务端 API；
-- 后端鉴权；
-- 真实扫码；
-- 真实二维码服务。
+> 结构按用户最初设计：`SKILL.md`（入口）+ `references/` 四个业务语义槽位 + `assets/` 资源槽位 + `templates/project-starter/` 可运行模板。
 
-## 资料读取顺序
+### 第 1 层：业务语义（**接需求必读，优先于一切流程文档**）
 
-1. `references/component-registry.md`；
-1. `references/figma-node-index.md` — **Node ID 可读对照索引**，把 `1747:19635` 这类 REST API 编号还原成「所在页面 > 位置 > Figma 名称」并附 Figma 定位链接；写文档或组件元信息前先查此表；
-1. `references/component-fidelity-checklist.md` — **还原精度对照表**，记录已确认偏差、根因、逐属性核对基线、未核对清单和「定位节点 → 逐属性读 → 写实现 → 浏览器实测 → 登记」五步流程；**禁止用相似组件类推或用 Vant 默认值填空**；
-2. `references/design-spec-from-figma.md` — **当前规范基准**，第九节「最终规范值」为可落地值，**9.7 为 2026-11-06 用户 7 项数值裁决**、**11.6 为渲染口径重算依据**；实测范围为同一 Figma 文件的两个页面节点 `1550:3803`「——模板——」与 `1824:42919`「泰国」（24 个业务页面，见第十一节）。**统计口径为渲染口径：只采集可见节点，隐藏节点与隐藏状态变体不进入规范值**；
-3. `references/figma-derived-spec.md`；
-4. `references/components.md`；
-5. `references/design-tokens.md` — 早期确认值的历史记录，**冲突处以第 2 项第九节为准**；
-6. `references/requirements-input.md`；
-7. `references/runtime-conditions.md`；
-8. 用户指定的 Figma Node 和截图。
+| 顺序 | 文件 | 回答什么 |
+|---|---|---|
+| 1 | `references/product-context.md` | 产品定位、角色、主流程、业务对象与字段、国家版本、多语言 |
+| 2 | `references/design-principles.md` | 设计原则、交互规则、复用总纲、**结果级约束** |
+| 3 | `references/design-tokens.md` | 颜色 / 字号 / 行高 / 间距 / 圆角 / 控件尺寸（权威入口） |
+| 4 | `references/components/README.md` | 组件清单、选型依据、状态与用法、**逐场景调用核对表** |
+| 5 | `references/pages/README.md` | 页面清单、路由、模板工作台、页面模式、**确认页结构基准** |
+| 6 | `references/assets/README.md` | 资源槽位映射与本地资源清单 |
 
-> **2026-11-05 用户裁决「以设计稿中的为准」**：规范数值一律取 Figma 节点实际渲染属性（`fills` / `style` / `cornerRadius` / `effects` / `itemSpacing` / `padding*`），不取画板说明文字标注、外部海信 token 文件或 Vant 默认值。代码侧 `src/theme.css` 的 `--van-*` 变量迁移**尚未执行**，需前端确认后再改。
+### 第 2 层：执行流程（写页面时读）
 
-## 强制规则
+| 顺序 | 文件 | 回答什么 |
+|---|---|---|
+| 7 | `references/requirements-input.md` | 需求输入 YAML 结构 |
+| 8 | `references/page-generation-decision-tree.md` | 逐页判定 A/B/C/D/E 分支、组件依赖、文件清单 |
+| 9 | `references/page-generation-sop.md` | 复制脚手架、生成页面 / 路由 / i18n、构建与实测 |
+| 10 | `references/quality-gates.md` | 五道人工门禁 + **`npm run gate` 可执行门禁** |
+| 11 | `references/component-registry.md` 第二节 2.0 | 组件调用契约与权威清单 |
 
-- **禁止只写裸 Node ID**（用户 2026-11-06：「这种 `1747:19635` 的代码无法判断是哪个页面」）：文档、注册表、组件元信息中每个 `数字:数字` 必须同时给出「所在页面 > 位置 > Figma 名称」，编号只作检索值；页面归属一律查 `references/figma-node-index.md`，查不到就标「待确认」，不推测。5174 预览页的「所在页面 / 位置」为首要信息，「Figma Node」降为检索行；
-- **禁止「类推」与「默认值填空」**（用户 2026-11-09：「还原精度不高的原因是啥」）：组件落地前必须先定位 Figma 节点、逐属性读（尺寸 / `padding*` / `itemSpacing` / 圆角 / `fills` / `strokes` / 文字样式），**不允许因为找不到节点就套相似组件，也不允许用 Vant 默认视觉填空**；实现后用 `getBoundingClientRect` + `getComputedStyle` 回读，与实测值差值 > 1px 视为不通过；结果登记到 `references/component-fidelity-checklist.md`。
-- Figma组件是视觉唯一来源；
-- Vant只提供行为，不使用默认Vant视觉；
-- 每个组件必须绑定Figma Node ID；
-- 每个组件必须使用本地资源；
-- 禁止用字符或默认图标替代Figma资源；
-- 旧版 `visitor-appointment-prototype` 组件不参与本Skill；
-- 组件完成独立预览和Figma截图对照后才能标记为 `ready`；
-- 需求未确认前不生成页面代码；
-- 页面范围限 375 手机画布；「主访客提交成功」(1024×974) 为 PC 适配、不在本次范围（用户 2026-11-05 确认）；
-- 4 组同名业务页面**都是有效版本、分属不同国家**（用户 2026-11-05 确认「不同版本」、2026-11-06 补充「分了不同的国家」），不合并、不去重、不排优先级，23 个 375 页面全部纳入组件映射范围；
-- **2026-11-06 规范数值硬约束**：字号只用 `12/13/14/16/18/20/24`（不用 `10/17/72`）；行高 = 字号 × 1.5；间距不含小数、允许值不含 `5/3.14/11`；padding 不用 `13/23`；全圆角统一 `999`；隐藏节点不采集。逐条依据见 `design-spec-from-figma.md` 9.7。代码侧 `theme.css` 与组件样式**尚未同步**，改代码前需确认；
-- **2026-11-06 组件裁决（用户逐条答复，依据见 `component-gap-analysis.md` 第八、九节）**：① 所有输入框具备「默认 / 聚焦 / 填充 / 禁用」四态（Figma `field-input` 组件集 `5:374` 只有「填充 / 禁用」变体、**无「聚焦」变体**；按用户第二张状态截图实现为 **5 态**，含「只读」）；② 「审批记录」与「流程记录」是**一个组件**，「更多」支持点击；③ 点「人员选择」→「选择入园人员」弹层，点左下角已选人员 →「已选列表」**叠在选人弹层之上**（可返回 / 清空 / 单个删除，**叠层偏移 12px**：上层顶边 92、高度 `calc(100% - 92px)`、底边仍贴画布底），**两个弹层都撑到最大高度 = 画布高 − 顶部 80px**（2026-11-09 裁决，原 80% 口径作废），弹层关闭按钮的 `×` 放**右侧**且用 flex 居中（不要用文字 `×` + `line-height`）；④ `1723:28208` 是登记卡片视觉来源；⑤ 二维码最小 **160**、**假码仅展示用**、样式用用户提供的资源；⑥ 语言 / 日期选择**放在输入框里，另拆一个 Popup 组件**；⑦ 组件名**全量去掉 `Figma` 前缀**（用户「5 全部去掉」「是的推广到全部」），CSS 类名 `figma-*` 与目录 `components/figma/` 保留；⑧ 当前阶段**先搭建组件库，不先做业务页面**；⑨ 无用的旧 `Hisense*` 历史章节已删除。
-- **当前组件清单（2026-11-06，见 `component-registry.md` 第二节）**：**20 个独立组件 + 1 个兼容别名 `FlowRecordCard`**，全部 `pending`；画廊导航 5 组（设计规范 / Field / 通用组件 / 业务组件 / Popup）共 25 项，右侧**左展示 / 右说明两栏撑满一屏，画布 1:1 不缩放**（用户 2026-11-09「撑满一屏不要缩放，说明和展示左右布局」）。新增 `ContentRow`、`InlineInput` 两个独立组件（用户要求「沉淀下我看看」）；`Button` 按用户第二张变体截图实现 5 色系 × 3 形态共 15 变体。
-- **Figma Node ID 勘误（全文件 82,427 节点核查，见 `component-gap-analysis.md` 9.2）**：主组件 `5:374` / `5:387` / `5:389` 不在任何 CANVAS 子树内但可经 `/nodes` 直取，不当作「节点不存在」。用户所说的「67911」是**问题编号 6/7/9/11**，不是 Figma 数字。
-- 涉及视觉或代码的改动，先在 5174 组件预览页经用户确认后再提交推送。
+### 第 3 层：Figma 事实（**只有两种情况才读**）
 
-## 组件流程
+> ① 首次沉淀一个全新组件 / 全新页面；② 用户明确说「按设计稿校准」或给了截图且要求逐像素对齐。其余一律不去 Figma 取精确数值。
+
+`references/design-spec-from-figma.md` 第九节 / 9.7 / 11.6（视觉规范基准）、`references/figma-node-index.md`（Node ID → 页面 > 位置 > 名称）、`references/component-fidelity-checklist.md`（还原精度对照）、`references/figma-derived-spec.md`、`references/components.md`、`references/runtime-conditions.md`。
+
+### 第 4 层：历史（追溯用，不是现行规则）
+
+`references/history/decisions.md`（用户逐条裁决）、`references/skill-build-retrospective.md`（P1–P18 复盘）、`references/history/design-tokens-legacy.md`（早期 token 历史值）、`references/component-gap-analysis.md`（历史缺口快照）。
+
+## 三、执行流程
 
 ```text
-Figma Node
-→ 读取结构/变量/状态/资源
-→ Vue模板 + CSS实现
-→ Vant仅封装行为
-→ 组件独立预览
-→ Figma截图对照
-→ 标记ready
+接需求
+  ↓
+① 先查 src/pages/ 有没有对应页面、模板工作台有没有对应卡片
+   再查 components/README.md 与 component-registry.md 2.0 有没有对应组件
+  ↓
+② 命中 → 只写组装层：在页面里放组件、传 prop、给数据
+   （默认只动目标页面 1 个文件；组件内部视觉是已冻结资产，一律不动）
+  ↓
+③ 组件能力不够 / 未覆盖 → 先输出「缺口 + 2–3 个交互方案 + 推荐项」
+   等用户裁决后才动手；裁决后优先用现有 prop，确实缺才补最小 prop
+  ↓
+④ 生成 / 修改代码 → 从 templates/project-starter/ 复制工程骨架
+   （禁止用纯单文件原生 HTML 替代 Vue 组件库工程）
+  ↓
+⑤ npm run gate        ← 可执行判定，结果级约束逐项检查
+   npm run build       ← 构建通过
+   浏览器真实点击      ← 组件交互 / 弹层 / 换行 / 无横向滚动 / 控制台零错误
+  ↓
+⑥ quality-gates.md 五道门禁逐项打勾；未通过项如实标注，不写成已完成
 ```
 
-## 运行模板
+**关键顺序**：第 ① 步不能跳。模板 + 组件库是为了**复用**，不是为了每次重新还原设计稿。
 
-可运行模板位于：
+## 四、现行硬约束（摘要，完整版见 `design-principles.md`）
+
+1. **复用优先**：命中已有页面 / 组件只写组装层；不去 Figma 重新取数。
+2. **页面不得覆盖组件布局模型**：`display` / `flex` / `grid` / `position` / `float` / `padding` 与固定尺寸 / 底色一律走 prop；唯一例外 `:deep(.x) { width: 100% }`。
+3. **产物形态**：必须是可运行 Vue 3 + Vite 工程，禁止纯单文件原生 HTML。
+4. **逐场景必用组件**：新建预约第二步必须 `UserCard` + `VehicleCard`；确认页必须 `Field state="readonly"` 上下结构 + 同行人 / 车辆汇总；协议必须 `Checkbox` + `Dialog` + `Popup`。完整表见 `components/README.md` 第六节。
+5. **禁止自绘**：`.row__label` / `.row__value` 两列、`.tags` / `.vehicles` / `.addbtn`、`document.createElement` 手拼列表、自绘 checkbox / popup / dialog。
+6. **不把未确认规则写成事实**：数量上限、字符长度、车牌正则等只来自需求输入；待确认项标「待确认」。
+7. **多语言与长标题一律换行**：禁止 `nowrap + ellipsis + overflow:hidden`；三语 `zh` / `en` / `th` key 齐全。
+8. **弹层口径**：底部 Popup 外层 `#F2F3F5` + 内容卡白底；`Dialog` / 日历 / 级联组件内白底；协议名 `#00AAA6` 可点；`Dialog` 左「返回」右「同意并继续」。
+9. **组件能力不够先问后改**：等用户裁决，不在页面自造结构。
+10. **Figma 是视觉唯一来源**，Vant 只提供行为；每个组件绑定 Figma Node ID 且带「页面 > 位置 > 名称」；图标统一 `IconBox`；资源用本地 `src/assets/`。
+11. **375 画布、禁止横向滚动**，所有页面 `scrollWidth == clientWidth`。
+12. **发布授权不跨轮**：用户未明确要求发布时只做本地验证与打包。
+
+历史裁决原文与依据见 `references/history/decisions.md`；组件契约细则见 `component-registry.md` 第一节规则 1–14。
+
+## 五、工程入口
 
 ```text
 templates/project-starter/
+├── index.html / vite.config.js / package.json / serve.mjs
+├── scripts/check-components.mjs        # npm run gate 可执行门禁
+└── src/
+    ├── main.js / App.vue / router.js / i18n.js / theme.css
+    ├── ComponentGallery.vue             # /components 组件库（6 组 37 项）
+    ├── DesignSpecPanel.vue              # 规范面板
+    ├── components/figma/                # 34 个 .vue，index.js 33 个导出
+    ├── pages/                           # 10 个 .vue + 模板工作台（15 张卡）
+    └── assets/                          # 本地 Figma 资源
 ```
 
-模板入口是组件预览，不是业务页面。
+| 入口 | 路由 | 用途 |
+|---|---|---|
+| 组件库 / 模板工作台 | `/components` | 组件独立预览、模板页面平铺、视觉与交互核对 |
+| 业务页面原型 | `/`、`/appointment/new`、`/appointment/success`、`/appointment/detail`、`/appointment/records`、`/security/detail`、`/pass`、`/companion` 等 12 条路由 | 需求生成后的可运行原型 |
+
+```bash
+cd templates/project-starter
+npm install
+npm run gate        # 组件复用 / 页面结构 / 多语言 / token 可执行检查
+npm run dev         # 本地开发（Vite dev + HMR）
+npm run build       # 生产构建
+node serve.mjs      # 先构建再静态服务 dist（SPA fallback）
+```
+
+`serve.mjs` 供本地与线上预览；线上分享链接由发布工具提供，不属 Skill 内容。
+
+## 六、快速路径（输入需求 → 出项目）
+
+```text
+product-context.md / design-principles.md / design-tokens.md   ← 先读业务语义
+  → components/README.md（选型 + 调用核对表）
+  → pages/README.md（页面模式 + 确认页基准）
+  → requirements-input.md（结构化 YAML）
+  → page-generation-decision-tree.md（逐页分支 A/B/C/D/E）
+  → page-generation-sop.md（复制 project-starter → 生成页面 / 路由 / i18n）
+  → npm run gate && npm run build && 浏览器真实点击
+  → quality-gates.md（五道门禁）
+```
+
+样例需求与试跑结果见 `examples/sample-requirement.yaml`、`examples/sample-run-report.md`。**禁止跳过「先查已有页面 / 组件」直接按截图自造页面结构。**

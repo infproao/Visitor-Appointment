@@ -1,5 +1,5 @@
 <template>
-  <van-popup v-model:show="visible" position="bottom" round class="language-popup figma-popup-375" :teleport="teleport">
+  <van-popup v-model:show="visible" position="bottom" round class="language-popup figma-popup-375" :teleport="effectiveTeleport">
     <header class="language-popup__header">
       <span class="handle" />
       <div class="title-row">
@@ -24,16 +24,20 @@
 
 <script setup>
 import { computed } from 'vue'
+import { usePopupTeleport } from './usePopupTeleport.js'
 
 const props = defineProps({
   show: Boolean,
   title: { type: String, default: '切换语言' },
-  teleport: { type: [String, Object], default: 'body' },
+  // 不传时自动挂进 375 手机画布（组件库预览），独立页面挂 body
+  teleport: { type: [String, Object], default: '' },
   languages: { type: Array, default: () => [] },
   modelValue: String
 })
 const emit = defineEmits(['update:show', 'update:modelValue', 'select'])
 const visible = computed({ get: () => props.show, set: v => emit('update:show', v) })
+const autoTeleport = usePopupTeleport()
+const effectiveTeleport = computed(() => props.teleport || autoTeleport.value)
 function select(x) {
   emit('update:modelValue', x.code)
   emit('select', x)

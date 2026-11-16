@@ -1,5 +1,5 @@
 <template>
-  <span class="inline-input" :style="{ background }">
+  <span class="inline-input" :style="{ background, paddingLeft: `${padding}px`, paddingRight: `${padding}px`, fontWeight: weight }">
     <span v-if="before" class="icon icon--before" aria-hidden="true">
       <svg viewBox="0 0 14 14"><circle cx="7" cy="4.5" r="2.4" /><path d="M2.2 12c.4-2.6 2.3-4 4.8-4s4.4 1.4 4.8 4" /></svg>
     </span>
@@ -14,11 +14,15 @@
 // Figma Node 1893:20270「input」62×22，主组件 13:8238，属性「状态」。
 // 实测：绿色胶囊 #23C343 + 白字「已通过」+ addBefore(user 14×14) / addAfter(info-circle 14×14)。
 // 视觉上是一个「行内状态标签」，不是文本输入框；名称沿用 Figma 节点名，是否改名待确认。
+// 2026-11-10：预约记录卡片 1723:28208 > card > content > input 复用同一胶囊（#F9CC45 + 「审批中」），
+// 差异仅为左右内边距 10（默认 4）与字重 600（默认 400），故补 padding / weight 两个可选属性，不另建组件。
 defineProps({
   text: { type: String, default: '已通过' },
   background: { type: String, default: '#23C343' },
   before: Boolean,
-  after: { type: Boolean, default: true }
+  after: { type: Boolean, default: true },
+  padding: { type: Number, default: 4 },
+  weight: { type: [Number, String], default: 400 }
 })
 </script>
 

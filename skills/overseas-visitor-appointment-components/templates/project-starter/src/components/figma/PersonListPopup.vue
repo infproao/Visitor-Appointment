@@ -6,6 +6,7 @@
     round
     :class="['person-popup', 'figma-popup-375', { 'person-popup--timeline': closeable }]"
     :overlay="true"
+    :teleport="popupTarget"
   >
     <header>
       <span class="handle" />
@@ -34,7 +35,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { usePopupTeleport } from './usePopupTeleport.js'
 import deleteIcon from '../../assets/figma-vehicle-delete.svg'
+
+const popupTarget = usePopupTeleport()
 
 const props = defineProps({
   show: Boolean,

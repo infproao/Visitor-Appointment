@@ -1,5 +1,5 @@
 <template>
-  <PageFrame :title="t('app.title')" variant="detail">
+  <PageFrame :title="t('app.title')" variant="detail" :embedded="embedded">
     <section class="detail-header-card">
       <h2>张三等2026/3/23日来访瑞嘉工业园区</h2>
       <Tag label="审批中" status="warning" />
@@ -34,7 +34,7 @@
         <Field :label="t('form.idType')" model-value="越南公民身份证" state="readonly" />
         <Field :label="t('form.idNumber')" model-value="52********018" state="readonly" />
       </article>
-      <UserCard state="detail" :members="people" count="10" />
+      <UserCard state="detail" :members="people" count="10" full :padding="16" />
     </section>
 
     <section v-else class="approval-wrap">
@@ -54,6 +54,7 @@ import UserCard from '../components/figma/UserCard.vue'
 import PageFrame from './PageFrame.vue'
 
 const { t } = useI18n()
+const props = defineProps({ embedded: Boolean })
 const activeTab = ref('')
 const tabs = computed(() => [t('detail.tabs.basic'), t('detail.tabs.flow')])
 const currentTab = computed(() => activeTab.value || tabs.value[0])
@@ -71,8 +72,7 @@ const approvalGroups = [
 .detail-header-card__rows { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; color: #86909C; font: 400 14px/22px "PingFang SC", sans-serif; }
 .detail-header-card :deep(.tabs) { width: calc(100% + 32px); margin: 16px 0 0 -16px; }
 .detail-stack { width: 100%; display: grid; gap: 12px; margin-top: 12px; }
-.detail-stack :deep(.user-card-flow), .detail-stack :deep(.user-card-flow .list-card) { width: 100%; }
-.detail-stack :deep(.user-card-row) { width: 100%; }
+/* UserCard 满宽与内边距由组件 full / padding prop 表达 */
 .info-card { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; background: #FFFFFF; }
 .info-card h3 { margin: 0 0 8px; color: #1D2129; font: 600 16px/24px "PingFang SC", sans-serif; }
 .info-card strong { color: #1D2129; font: 600 16px/24px "PingFang SC", sans-serif; }

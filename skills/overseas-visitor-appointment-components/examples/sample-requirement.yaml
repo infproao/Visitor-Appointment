@@ -1,0 +1,75 @@
+# 样例需求：越南访客端「访客须知确认」增量
+# 依据：references/requirements-input.md 的需求输入结构
+# 用途：验证「输入需求 → 决策树 → SOP → 构建 → 浏览器实测」整条链路
+
+client: visitor
+
+pages:
+  - visitor-home                    # A 套模板
+  - appointment-success-simple      # B 改模板（成功页增加「确认访客须知」入口）
+  - visitor-regulations-confirm     # C 新建页面
+  # security-scan 放在 excluded，不进入 pages
+
+country: "越南"
+defaultCountry: "中国"
+language: "中文"
+languages:
+  - "中文"
+  - "英语"
+  - "泰语"
+
+fields:
+  - key: noticeAgreed
+    label: "我已阅读《访客须知》"
+    type: checkbox
+    required: true
+    options: []
+    visibleWhen: ""
+    source: "本次需求"
+    confirmationStatus: confirmed
+  - key: privacyAgreed
+    label: "我已阅读并同意《隐私政策》"
+    type: checkbox
+    required: true
+    options: []
+    visibleWhen: ""
+    source: "本次需求"
+    confirmationStatus: confirmed
+  - key: visitorPhone
+    label: "手机号"
+    type: phone
+    required: false
+    options: []
+    visibleWhen: ""
+    source: "本次需求"
+    confirmationStatus: proposed   # 校验规则未给，不写正则
+
+validation:
+  phone:
+    countryCode: ""
+    rule: ""
+    errorMessage: ""              # 空 = 只实现输入与展示，不编造正则
+
+assets:
+  - path: "src/assets/bg-image-2.svg"
+    purpose: "新建页顶部背景，复用设计稿背景图"
+    source: "Figma 导出 / 已在工程内"
+    confirmationStatus: confirmed
+    width: "375px"
+    height: "486px"
+    keepAspectRatio: true
+
+prototype:
+  output: vue3-vant-runnable-prototype
+  mockData: true
+  backend: false
+  api: false
+  existingApi: false
+  browserShell: false
+  qrCode: placeholder
+  qrPlaceholderAsset: "assets/images/qr-placeholder.png"
+  scanMode: mock
+
+excluded:
+  - page: security-scan
+    reason: "真实扫码能力超出前端 mock 范围（决策树分支 E）"

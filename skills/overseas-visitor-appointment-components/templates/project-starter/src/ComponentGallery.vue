@@ -33,7 +33,7 @@
 
       <footer class="sidebar__footer">
         <p>Figma 文件 <code>JRpDmIIybR17xUVA8s9sK4</code></p>
-        <p>独立组件 22 个 · 均待 Figma 截图对照</p>
+        <p>已注册组件 32 个 · 可用于页面与模板搭建</p>
       </footer>
     </aside>
 
@@ -47,7 +47,7 @@
             <p class="main__crumb">{{ currentGroupTitle }} / {{ current.name }}</p>
             <h2 class="main__title"><code>{{ current.id }}</code></h2>
           </div>
-          <span class="badge" :class="current.kind === 'page' ? 'badge--prototype' : 'badge--pending'">{{ current.kind === 'page' ? 'prototype · mock' : 'pending · 未完成 Figma 截图对照' }}</span>
+          <span class="badge" :class="current.kind === 'page' ? 'badge--prototype' : 'badge--available'">{{ current.kind === 'page' ? 'prototype · mock' : 'available · 可用于页面与模板搭建' }}</span>
         </header>
 
         <section class="meta">
@@ -94,6 +94,10 @@
                   <p class="demo__hint">语言选择放在 Field 只读态里，弹层由独立 Popup 组件承载。</p>
                 </template>
 
+                <template v-else-if="current.id === 'FieldMember'">
+                  <MemberSelectionFlow v-model="memberSelected" :members="memberOptions" />
+                  <p class="demo__hint">点击字段打开“选择入园人员”弹窗；支持全选、单选、确认和已选胶囊删除（tag 固定 28px 高）。底部“已选人员：N项”可点击打开已选列表，支持返回、清空、单个删除。</p>
+                </template>
                 <template v-else-if="current.id === 'FieldInput'">
                   <Field label="单行输入" placeholder="请输入" />
                   <Field label="手机号" prefix="+84" placeholder="请输入" required />
@@ -127,14 +131,48 @@
                   </div>
                 </template>
 
+                <template v-else-if="current.id === 'ActionBar'">
+                  <p class="demo__state">dual · 取消 / 提交（审批、表单提交）</p>
+                  <ActionBar variant="dual" @cancel="lastAction = '取消'" @confirm="lastAction = '提交'" />
+                  <p class="demo__state">selection · 已选择摘要 + 确定(N)（成员选择）</p>
+                  <ActionBar variant="selection" :count="10" selection-text="已选择：选项1、选项2 等 10 项" @selection="lastAction = '查看已选'" @confirm="lastAction = '确定(10)'" />
+                  <p class="demo__state">auth · 附加授权 + 取消 / 下一步（入园操作）</p>
+                  <ActionBar variant="auth" @scan="lastAction = '附加授权'" @cancel="lastAction = '取消'" @confirm="lastAction = '下一步'" />
+                  <p class="demo__hint">最近操作：{{ lastAction || '无' }}。三种样式共用同一组件，按钮复用 Button、图标复用 IconBox；已选摘要按多语言换行约定展示完整文案，不写省略号。</p>
+                </template>
+
                 <template v-else-if="current.id === 'Checkbox'">
                   <div class="demo__stack"><Checkbox v-model="checked">已选</Checkbox><Checkbox>未选</Checkbox></div>
                 </template>
 
+                <template v-else-if="current.id === 'CollapseItem'">
+                  <p class="demo__state">展开（默认）</p>
+                  <CollapseItem title="访客信息"><p class="demo__hint">标题行 40 高，内容槽由调用方放组件；长标题自动换行，不被右侧箭头遮挡。</p></CollapseItem>
+                  <p class="demo__state">收起</p>
+                  <CollapseItem title="检查项确认" :default-open="false"><p class="demo__hint">点击标题行可展开。</p></CollapseItem>
+                  <p class="demo__hint">Figma 1722:27223 / 1688:24312「collapse-item」343×370 = header 343×40 + body slot。与 ApprovalRecord 的分组折叠互不冲突：本组件是通用折叠容器，审批记录仍是业务组件。</p>
+                </template>
+
+                <template v-else-if="current.id === 'FieldCheckbox'">
+                  <p class="demo__state">字段级复选组 · 带全选</p>
+                  <FieldCheckbox v-model="checkItemsSelected" label="检查项确认" required select-all :options="checkItems" />
+                  <p class="demo__hint">当前已选：{{ checkItemsSelected.join('、') || '无' }}</p>
+                  <p class="demo__hint">Figma 1687:24203「field-checkbox」319×168 = field-title 319×24 + Right 319×116。复选框复用 Checkbox.vue（size="lg" 20×20），本组件只负责标题、全选与数据编排。</p>
+                </template>
+
                 <template v-else-if="current.id === 'Tag'">
+                  <!-- 用户 2026-11-12 状态色截图：流程 tag 5 种 + 人员状态 tag 5 种 -->
+                  <p class="tag-group-title">流程 tag</p>
                   <div class="demo__row">
-                    <Tag label="已通过" status="success" /><Tag label="待确认" status="warning" />
-                    <Tag label="已退回" status="danger" /><Tag label="已过期" status="neutral" />
+                    <Tag label="审批中" status="approving" /><Tag label="已通过" status="approved" />
+                    <Tag label="已拒绝" status="rejected" /><Tag label="已取消" status="cancelled" />
+                    <Tag label="已过期" status="expired" />
+                  </div>
+                  <p class="tag-group-title">人员状态 tag</p>
+                  <div class="demo__row">
+                    <Tag label="未到访" status="approving" /><Tag label="已到访" status="approved" />
+                    <Tag label="已入园" status="entered" /><Tag label="已出园" status="exited" />
+                    <Tag label="已完成" status="expired" />
                   </div>
                 </template>
 
@@ -142,7 +180,34 @@
                 <template v-else-if="current.id === 'SelectList'"><SelectList v-model="selectValue" :options="selectOptions" /></template>
                 <template v-else-if="current.id === 'Uploader'"><Uploader label="本人照片上传" required hint="支持拍照或相册上传" /></template>
                 <template v-else-if="current.id === 'EmptyState'"><EmptyState title="暂无预约记录" /></template>
-                <template v-else-if="current.id === 'QRCode'"><QRCode caption="二维码占位（展示用）" /></template>
+                <template v-else-if="current.id === 'Search'">
+                  <p class="demo__state">不带下拉 · 32 高 / r17（搜索园区精确到门 1822:38312）</p>
+                  <Search v-model="searchValue" placeholder="请输入搜索关键词" />
+                  <p class="demo__state">带前置下拉 · 40 高 / r4（安保端筛选行 1035:8201）</p>
+                  <Search v-model="searchValue" placeholder="请输入账号关键词">
+                    <template #prefix><Dropdown v-model="searchDepartment" :options="departments" :trigger-width="80" popup-title="选择部门" /></template>
+                  </Search>
+                  <p class="demo__state">扫码样式 · 右侧取景框入口（用户 2026-11-13 截图）</p>
+                  <Search v-model="scanSearchValue" scan placeholder="请输入搜索关键词" @scan="lastAction = '扫码'" />
+                  <p class="demo__state">触发方式 · input / debounce / enter（当前：{{ searchTrigger }}）</p>
+                  <Search v-model="triggerSearchValue" :trigger="searchTrigger" :debounce-ms="300" placeholder="输入关键词，看下方结果" @search="lastSearchValue = $event" />
+                  <div class="demo__row">
+                    <Button v-for="mode in searchTriggers" :key="mode" :label="mode" :tone="searchTrigger === mode ? 'teal' : 'neutral'" :form="searchTrigger === mode ? 'solid' : 'outline'" :block="false" @click="searchTrigger = mode" />
+                  </div>
+                  <p class="demo__hint">已触发搜索词：<strong>{{ lastSearchValue || '（空）' }}</strong>；最近操作：{{ lastAction || '无' }}。扫码图标复用 IconBox 的 scan-qr-code；延迟触发还是回车触发按使用场景裁决，三种模式都保留回车立即搜索兜底，输入法组合期间不误发。</p>
+                  <p class="demo__hint">2026-11-10 用户裁决：两种样式按 #prefix 自动切换 —— 不带下拉 32 高、圆角 17；带下拉 40 高、圆角 4。图标沿用设计稿 SVG path，与文字水平居中对齐。</p>
+                </template>
+                <template v-else-if="current.id === 'Dropdown'">
+                  <p class="demo__state">基础用法 · 触发宽 80px</p>
+                  <div class="demo__row"><Dropdown v-model="dropdownValue" :options="departments" :trigger-width="80" popup-title="选择部门" /></div>
+                  <p class="demo__hint">设计稿标注：触发文案最多 5 个字、超出省略，宽 80px；点击触发器打开底部抽屉（Popup + SelectList），触发器文字与箭头水平对齐。</p>
+                </template>
+                <template v-else-if="current.id === 'Cascader'">
+                  <p class="demo__state">选择园区 · 园区 → 门两级级联</p>
+                  <Cascader v-model="cascadeValue" :options="parkOptions" />
+                  <p class="demo__hint">点击触发器打开底部抽屉；搜索框可过滤当前层级，层级 tab 可回退重选，选完最后一级回填触发器。当前值：{{ cascadeValue.join(' / ') || '未选择' }}</p>
+                </template>
+                <template v-else-if="current.id === 'QRCode'"><QRCode caption="二维码 · scan-qr-code（展示用）" /></template>
                 <template v-else-if="current.id === 'ContentRow'">
                   <ContentRow />
                   <ContentRow title="中国" code="+86" :checked="false" />
@@ -156,6 +221,13 @@
                   </div>
                   <p class="demo__hint">Figma 1893:20270「input」：视觉是行内状态标签，不是文本输入框。</p>
                 </template>
+                <template v-else-if="current.id === 'SecurityHeader'">
+                  <div class="security-demo">
+                    <SecurityHeader title="详情" @back="securityAction = '返回'" @close="securityAction = '关闭'" />
+                    <p class="security-demo__body">安保端页头：左侧「返回 + 关闭」、居中标题 17/18 w500，下接页面内容。</p>
+                  </div>
+                  <p class="demo__hint">Figma 安保端 &gt; 详情 1042:17750 &gt; navbar-web：44 高白底导航（wrapper pad 12/16、left 56×20 gap16、标题 17/18 w500 #1D2129）；原型不渲染系统状态栏，故只还原 44 高本体。当前操作：{{ securityAction || '未点击' }}</p>
+                </template>
 
                 <!-- 业务组件 -->
                 <template v-else-if="current.id === 'UserCard'">
@@ -165,7 +237,7 @@
                   <UserCard :name="userCardName" :state="userCardName ? 'filled' : 'default'" editable @edit="userCardEditRequested = true" @update:name="userCardName = $event" @remove="userCardName = ''" />
                   <p class="demo__state">详情 · 更多</p>
                   <UserCard state="detail" :members="people" count="11" @more="userCardMoreRequested = true" />
-                  <p class="demo__hint">默认、填充、详情共用同一个列表卡片；填充态支持编辑和删除，详情态通过“更多”打开人员列表。</p>
+                  <p class="demo__hint">默认、填充、详情共用同一个列表卡片；填充态支持编辑和删除；详情态同行人文字 16px、最多展示 5 个，超出通过“更多”打开人员列表查看全部。</p>
                 </template>
                 <template v-else-if="current.id === 'VehicleCard'">
                   <p class="demo__state">默认</p>
@@ -178,9 +250,9 @@
                 </template>
                 <template v-else-if="current.id === 'CardVariants'">
                   <CardVariants :registration="registration" />
-                  <p class="demo__hint">四种业务卡片样式：带图片摘要、访客摘要、来访记录和预约登记卡片。</p>
+                  <p class="demo__hint">四种业务卡片样式：带图片摘要、访客摘要、来访记录和预约记录卡片；第 4 张复用同一个预约记录卡片组件展示预约记录。</p>
                 </template>
-                <template v-else-if="current.id === 'RegistrationCard'"><RegistrationCard :record="registration" /></template>
+                <template v-else-if="current.id === 'AppointmentRecordCard'"><AppointmentRecordCard :record="registration" /></template>
                 <template v-else-if="current.id === 'ApprovalRecord'">
                   <ApprovalRecord :groups="approvalGroups" />
                   <p class="demo__hint">按直属领导审批、一级审批人、二级审批人分组；每组展示审批人、状态、时间和审批意见，支持顶部整体折叠。</p>
@@ -200,17 +272,19 @@
                     <Button v-else-if="current.id === 'LanguagePopup'" label="打开语言弹层" @click="showLanguage = true" />
                     <Button v-else-if="current.id === 'PersonListPopup'" label="打开已选列表（最大高度）" @click="showPerson = true" />
                     <Button v-else-if="current.id === 'SelectListSheet'" label="打开列表选择抽屉" @click="showSelect = true" />
+                    <Button v-else-if="current.id === 'Dialog'" label="打开确认弹窗" @click="showDialog = true" />
                   </div>
                 </template>
               </div>
 
               <!-- 弹层实例挂在手机画布内 -->
               <DatePicker v-model:show="showDate" @confirm="onDateConfirm" />
-              <van-popup v-model:show="showSelect" position="bottom" round class="figma-popup-375">
-                <SelectList :options="selectOptions" model-value="学术访问" />
+              <van-popup v-model:show="showSelect" position="bottom" round class="figma-popup-375" :teleport="selectSheetTarget">
+                <SelectList :options="selectOptions" model-value="学术访问" padded />
               </van-popup>
               <LanguagePopup v-model:show="showLanguage" :languages="languages" :model-value="languageCode" @select="onLanguageSelect" />
               <PersonListPopup v-model:show="showPerson" title="已选择" :members="people" deletable />
+              <Dialog v-model:show="showDialog" title="请完成确认" message="请先阅读并勾选全部协议，再继续下一步操作。" />
               <Popup v-model:show="showPopup" title="添加同行人">
                 <Field label="姓名" placeholder="请输入" />
                 <div class="popup-buttons">
@@ -222,11 +296,11 @@
           </div>
 
           <aside class="stage__note">
-            <h3>待确认项</h3>
+            <h3>使用说明</h3>
             <ul>
-              <li>尚未完成与 Figma 节点的截图逐项对照</li>
-              <li>组件状态保持 <code>pending</code>，不得用于页面模板</li>
-              <li v-if="current.pendingNote">{{ current.pendingNote }}</li>
+              <li>{{ current.kind === 'page' ? '页面原型可直接预览与复用' : '组件已实现，可直接用于页面与页面模板搭建' }}</li>
+              <li>视觉细节以 Figma 节点与组件注册表为准</li>
+              <li v-if="current.pendingNote">备注：{{ current.pendingNote }}</li>
             </ul>
           </aside>
         </section>
@@ -236,15 +310,15 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import HomePage from './pages/HomePage.vue'
-import AppointmentFormPage from './pages/AppointmentFormPage.vue'
-import AppointmentDetailPage from './pages/AppointmentDetailPage.vue'
+import { computed, ref, shallowRef } from 'vue'
 import SpecialPagesPreview from './pages/SpecialPagesPreview.vue'
 import Steps from './components/figma/Steps.vue'
+import ActionBar from './components/figma/ActionBar.vue'
 import Button from './components/figma/Button.vue'
 import Field from './components/figma/Field.vue'
 import Checkbox from './components/figma/Checkbox.vue'
+import CollapseItem from './components/figma/CollapseItem.vue'
+import FieldCheckbox from './components/figma/FieldCheckbox.vue'
 import Tabs from './components/figma/Tabs.vue'
 import Tag from './components/figma/Tag.vue'
 import UserCard from './components/figma/UserCard.vue'
@@ -252,7 +326,7 @@ import VehicleCard from './components/figma/VehicleCard.vue'
 import ApprovalRecord from './components/figma/ApprovalRecord.vue'
 import ApprovalTimeline from './components/figma/ApprovalTimeline.vue'
 import CardVariants from './components/figma/CardVariants.vue'
-import RegistrationCard from './components/figma/RegistrationCard.vue'
+import AppointmentRecordCard from './components/figma/AppointmentRecordCard.vue'
 import Uploader from './components/figma/Uploader.vue'
 import EmptyState from './components/figma/EmptyState.vue'
 import QRCode from './components/figma/QRCode.vue'
@@ -263,7 +337,17 @@ import SelectList from './components/figma/SelectList.vue'
 import PersonListPopup from './components/figma/PersonListPopup.vue'
 import ContentRow from './components/figma/ContentRow.vue'
 import InlineInput from './components/figma/InlineInput.vue'
+import Search from './components/figma/Search.vue'
+import Dropdown from './components/figma/Dropdown.vue'
+import MemberSelectionFlow from './components/figma/MemberSelectionFlow.vue'
+import Cascader from './components/figma/Cascader.vue'
+import Dialog from './components/figma/Dialog.vue'
+import SecurityHeader from './components/figma/SecurityHeader.vue'
+import { usePopupTeleport } from './components/figma/usePopupTeleport.js'
 import DesignSpecPanel from './DesignSpecPanel.vue'
+
+// 画廊内裸 van-popup 也要挂进 375 手机画布，避免相对桌面视口居中
+const selectSheetTarget = usePopupTeleport()
 
 // 2026-11-06：Field 菜单收纳输入类演示；Popup 作为独立组件分组展示。
 const groups = [
@@ -276,10 +360,9 @@ const groups = [
   {
     title: '典型页面',
     items: [
-      { id: 'VisitorHomePage', name: '访客预约首页', kind: 'page', component: HomePage, node: '访客预约首页 · 中国版 mock', note: '首页、语言切换、新建预约和预约记录入口', at: '典型页面 · visitor-home' },
-      { id: 'AppointmentFormPage', name: '新建预约流程', kind: 'page', component: AppointmentFormPage, node: '访客预约02 · 中国版 mock', note: '预约信息 → 访客信息 → 信息确认三步流程', at: '典型页面 · appointment-form' },
-      { id: 'AppointmentDetailPage', name: '预约详情页', kind: 'page', component: AppointmentDetailPage, node: '预约详情 · 中国版 mock', note: '详情头、审批记录和出入记录', at: '典型页面 · appointment-detail' },
-      { id: 'SpecialPagesPreview', name: '特殊页面平铺', kind: 'special', component: SpecialPagesPreview, node: '用户提供的特殊页面设计稿', note: '提交成功、通行证、空记录、安保登记、预约详情等页面平铺预览', at: '典型页面 · special-pages' }
+      // 用户 2026-11-10 16:10 裁决：访客预约首页 / 新建预约流程 / 预约详情页「隐藏，模板页中有就可以」——
+      // 这三页在「模板页面」工作台内已可预览，导航不再重复列出；页面文件与路由保留。
+      { id: 'SpecialPagesPreview', name: '模板页面', kind: 'special', component: SpecialPagesPreview, node: '用户提供的模板页设计稿 / Figma「——模板——」与「整合页面」', note: '提交成功、通行证、空记录、安保登记、预约记录页、访客预约首页、新建预约流程等模板页面平铺预览', at: '典型页面 · 模板页面' }
     ]
   },
   {
@@ -288,7 +371,8 @@ const groups = [
       { id: 'Field', name: '输入框 · 5 态', node: '5:374 field-input 组件集；实例 1551:11096 等 · 311×76 / 311×98', note: '默认 / 聚焦 / 填充 / 只读 / 禁用；视觉依据为用户 11-06 提供的状态截图', pendingNote: 'Figma 组件集无「聚焦」变体，聚焦态按截图实现', at: '——模板—— > 通用组件 > field-input' },
       { id: 'FieldDate', name: '日期选择', kind: 'demo', node: 'Field 只读态 + DatePicker', note: '日期选择放在输入框里，弹层拆为独立 Popup', at: '组合演示 · Field 只读态 + DatePicker 弹层' },
       { id: 'FieldLanguage', name: '语言选择', kind: 'demo', node: 'Field 只读态 + LanguagePopup', note: '语言选择放在输入框里，弹层拆为独立 Popup', at: '组合演示 · Field 只读态 + LanguagePopup 弹层' },
-      { id: 'FieldInput', name: '输入类', kind: 'demo', node: 'Field / ContentRow 1686:23205 / InlineInput 1893:20270', note: '单行、多行、手机号前缀、列表内容行、行内状态标签', at: '——模板—— > 通用组件 > content' }
+      { id: 'FieldMember', name: '成员选择', kind: 'demo', node: '成员选择字段 + 选择入园人员 Popup + 已选列表 1803:33841', note: '点击字段打开选择入园人员弹窗；支持全选、单选、确认；已选 tag 28px 高；底部“已选人员：N项”点击打开已选列表（返回 / 清空 / 单个删除）', at: '组合演示 · 成员选择流程' },
+      { id: 'FieldInput', name: '输入类', kind: 'demo', node: 'Field / ContentRow 1686:23205 / InlineInput 1893:20270', note: '单行、多行、多语言、列表内容行、行内状态标签', at: '——模板—— > 通用组件 > content' }
     ]
   },
   {
@@ -296,13 +380,20 @@ const groups = [
     items: [
       { id: 'Steps', name: '步骤条', node: '1686:11131 · steps-dot 303×36', note: '三步流程指示', at: '——模板—— > 通用组件 > steps-dot' },
       { id: 'Button', name: '按钮', node: '用户 11-06 变体截图（5 色系 × 3 形态）+ Figma 1623:15263 等 4 实例', note: '色系 × 形态结构取自变体截图；主色（teal）= Figma 实测 #22BBB3（84 处），其余 4 色仍为截图取色', pendingNote: '5 色系的业务语义名称待确认，现按颜色命名；红/橙/绿与各禁用色仅有截图来源、无节点依据', at: '——模板—— > 通用组件 > button' },
-      { id: 'Checkbox', name: '复选框', node: '1551:11134 · 162×22', note: '协议与核查选择', at: '——模板—— > 通用组件 > checkbox' },
+      { id: 'ActionBar', name: '动作栏 · 三种样式', node: '用户 2026-11-13 截图（动作栏三种样式）', note: 'dual 取消/提交、selection 已选摘要+确定(N)、auth 附加授权+取消/下一步；按钮复用 Button、图标复用 IconBox；摘要完整换行不截断', at: '组合演示 · 动作栏' },
+      { id: 'Checkbox', name: '复选框', node: '1551:11134 · 162×22', note: '协议与核查选择；size="lg" 为 20×20 / r4 成员列表规格', at: '——模板—— > 通用组件 > checkbox' },
+      { id: 'CollapseItem', name: '折叠项', node: '1722:27223 / 1688:24312 · collapse-item 343×370', note: 'header 343×40 + body slot；标题行可点击折叠，长标题换行；与审批记录的业务分组折叠互不冲突', at: '——模板—— > 通用组件 > collapse-item' },
+      { id: 'FieldCheckbox', name: '字段复选组', node: '1687:24203 · field-checkbox 319×168', note: 'field-title + 复选组 + 全选；复选框复用 Checkbox.vue（size="lg"），不自绘勾选框', at: '——模板—— > 通用组件 > field-checkbox' },
       { id: 'Tag', name: '状态标签', node: '1623:15312 / 1623:20316', note: 'tag / tag-fill 两组', at: '——模板—— > 通用组件 > tag' },
-      { id: 'Tabs', name: '页签', node: '1623:20291 · tabs-line 343×42', note: '审批内容 / 审批记录', at: '——模板—— > 通用组件 > tabs-line' },
+      { id: 'Tabs', name: '页签', node: '1623:20291 · tabs-line 343×42', note: '审批内容 / 审批记录；full / height / background 三个 prop 供页面表达尺寸与底色', at: '——模板—— > 通用组件 > tabs-line' },
       { id: 'SelectList', name: '列表选择', node: '1721:27132 · Select List 343×156', note: '单选列表行与选中态', at: '——模板—— > 通用组件 > Select List' },
       { id: 'Uploader', name: '图片上传', node: '1686:20447 · field-upload 311×132', note: 'Vant 仅提供上传行为', at: '——模板—— > 通用组件 > field-upload' },
       { id: 'EmptyState', name: '空状态', node: '1723:28234 · 311×316', note: '使用本地 no-data 资源', at: '——模板—— > 通用组件 > 空状态' },
-      { id: 'QRCode', name: '二维码', node: '无独立 Figma 节点（本地占位资源）', note: '假码仅展示用，最小 160；样式沿用用户提供的资源', pendingNote: '所用资源是否即 qr-placeholder.png 待确认', at: '无独立 Figma 节点 · 本地占位资源' },
+      { id: 'Search', name: '搜索框', node: '整合页面 > 泰国 > 搜索园区精确到门 1822:38312 / 安保端-搜索页 1035:8201 / 用户 2026-11-13 扫码截图', note: '两种样式按 #prefix 自动切换：不带下拉 32 高 r17、带前置下拉 40 高 r4；scan prop 增加右侧扫码入口（IconBox scan-qr-code）；trigger = input / debounce / enter，回车始终兜底、输入法组合期间不误发', at: '整合页面 > 泰国 > 搜索园区精确到门 / 安保端 > 搜索页' },
+      { id: 'SecurityHeader', name: '安保端页头', kind: 'demo', node: '1042:17750 > navbar-web（375×88，含状态栏 44）', note: '白底 44 高：左「返回 20×20 + 关闭 20×20」间距 16、标题居中 17/18 w500 #1D2129；图标为 Figma 设计稿原始 path（arrow-left / close）', at: '安保端 > 详情 > navbar-web' },
+      { id: 'Dropdown', name: '下拉选择', node: '安保端 · 访客出入登记筛选（宽 80px，最多 5 字超出省略）', note: '触发器 + Popup 底部抽屉选项列表；触发文案超宽省略', at: '安保端 > 访客出入登记 > 筛选' },
+      { id: 'Cascader', name: '级联选择', node: '整合页面 > 泰国 > 选择园区 1822:36720 / 搜索园区精确到门 1822:38307', note: '园区 → 门两级；handle + 32 高搜索框 + 44 高层级 tab（无分割线）+ 列表，选中末级回填', at: '整合页面 > 泰国 > 选择园区 / 搜索园区精确到门' },
+      { id: 'QRCode', name: '二维码 scan-qr-code', node: '整合页面 > 首页 > scan-qr-code 1747:24918（Arco IconBox 图标）', note: '扫码图标统一由 IconBox 的 scan-qr-code 承载；二维码图片为本地占位资源，假码仅展示用、最小 160', pendingNote: '所用资源是否即 qr-placeholder.png 待确认', at: '整合页面 > 首页 > scan-qr-code' },
       { id: 'ContentRow', name: '列表内容行', node: '1686:23205 · content 343×44（主组件 36:3918）', note: '国旗 + 国家名 + 区号 + 勾选；已从 Figma 导出截图核对', at: '——模板—— > 通用组件 > content' },
       { id: 'InlineInput', name: '行内状态标签', node: '1893:20270 · input 62×22（主组件 13:8238）', note: '绿色胶囊 + 白字 + 前后图标；视觉是状态标签，名称沿用 Figma 节点名', at: '——模板—— > 业务组件 > input' }
     ]
@@ -310,10 +401,10 @@ const groups = [
   {
     title: '业务组件',
     items: [
-      { id: 'UserCard', name: '人员卡片', node: '1623:15330 / 1623:13303 / 1623:15088', note: '默认 / 填充两种状态；填充态支持编辑和删除事件', at: '——模板—— > 业务组件 > user-card-default' },
-      { id: 'VehicleCard', name: '车辆卡片', node: '1623:15278 / 1722:27597 · 311×56', note: '默认 / 填充两种状态；填充态支持编辑弹层和删除', at: '——模板—— > 业务组件 > 车辆card-edit' },
-      { id: 'CardVariants', name: '卡片四种样式', node: '用户提供的四种卡片截图', note: '图片摘要、访客摘要、来访记录、预约登记四种业务卡片样式组合预览', at: '组合演示 · 业务卡片样式' },
-      { id: 'RegistrationCard', name: '登记卡片', node: '1723:28208 · llistcard 351×156（归属已确认）', note: '安保登记列表卡片', at: '——模板—— > 业务组件 > llistcard' },
+      { id: 'UserCard', name: '人员卡片', node: '1623:15330 / 1623:13303 / 1623:15088', note: '默认 / 填充 / 详情共用同一组件；同行人文字 16px、列表最多展示 5 个；full / padding 透传 ListCard 控制满宽与内边距', at: '——模板—— > 业务组件 > user-card-default' },
+      { id: 'VehicleCard', name: '车辆卡片', node: '1623:15278 / 1722:27597 · 311×56', note: '默认 / 填充两种状态；填充态支持编辑弹层和删除；full / padding 透传 ListCard 控制满宽与内边距', at: '——模板—— > 业务组件 > 车辆card-edit' },
+      { id: 'CardVariants', name: '卡片四种样式', node: '用户提供的四种卡片截图', note: '图片摘要、访客摘要、来访记录、预约记录四种业务卡片样式组合预览；第 4 张复用 AppointmentRecordCard', at: '组合演示 · 业务卡片样式' },
+      { id: 'AppointmentRecordCard', name: '预约记录卡片', node: '1723:28208 · llistcard 351×156（归属已确认）', note: '展示一条预约记录：标题 16/24 w600 #101828、审批状态胶囊 62×22、园区 / 接访人 / 预约编号 14/22 #86909C，右侧 scan-qr-code 图标 40×40 #262626；四种业务卡片样式复用同一组件', at: '——模板—— > 业务组件 > llistcard' },
       { id: 'ApprovalRecord', name: '审批记录', node: '1722:27401 · 审批记录 343×330', note: '折叠列表 + 直属领导审批 / 一级审批人 / 二级审批人；展示审批人、状态、时间和意见', at: '——模板—— > 业务组件 > 审批记录' },
       { id: 'ApprovalTimeline', name: '出入记录', node: '1687:24064 · 流程记录 343×530', note: '入园 / 出园时间线；“更多”打开入园人或出园人只读列表', at: '——模板—— > 通用组件 > 出入记录' }
 
@@ -326,13 +417,14 @@ const groups = [
       { id: 'DatePicker', name: '日期弹层', node: '无确认 Figma 节点（van-calendar 行为）', note: 'Field 只读态点击后弹出的独立 Popup', kind: 'popup', at: '无确认 Figma 节点 · van-calendar 行为' },
       { id: 'LanguagePopup', name: '语言弹层', node: '4:4202 · 切换语言 375×812（cascader 375×357）', note: '标题「切换语言」；卡片上下 20、行高 44、行间 12、无分割线；关闭按钮 36×36', kind: 'popup', at: '越南版-用户端 > 越南版访客预约填报 > 切换语言' },
       { id: 'PersonListPopup', name: '已选列表弹层', node: '1803:33841 · 已选列表 375×801', note: '撑到最大高度（画布高 − 80px）；左上返回、右上清空、行内单个删除', kind: 'popup', at: '——模板—— > 通用组件 > 已选列表' },
-      { id: 'SelectListSheet', name: '列表选择抽屉', node: '1721:27132 + 1623:20325', note: '组合演示：SelectList 放入底部抽屉', kind: 'popup', at: '——模板—— > 通用组件 > Select List' }
+      { id: 'SelectListSheet', name: '列表选择抽屉', node: '1721:27132 + 1623:20325', note: '组合演示：SelectList 放入底部抽屉', kind: 'popup', at: '——模板—— > 通用组件 > Select List' },
+      { id: 'Dialog', name: '确认弹窗', node: '1623:20467 · dialog 311×176 / r16', note: '居中确认弹窗（与底部抽屉分开）：标题 18/24 w600、正文 16/22 #86909C、操作区 48 高、左「确定」#00AAA6 右「取消」#1D2129；表单未勾选协议时由页面调用同一组件', kind: 'popup', at: '——模板—— > 通用组件 > dialog' }
     ]
   }
 ]
 
 const keyword = ref('')
-const current = ref(groups[0].items[0])
+const current = shallowRef(groups[1].items[0])
 const filteredGroups = computed(() => {
   const q = keyword.value.trim().toLowerCase()
   if (!q) return groups
@@ -365,7 +457,7 @@ const figmaLinks = computed(() => {
 function select(item) {
   current.value = item
   showDate.value = false; showSelect.value = false; showLanguage.value = false
-  showPopup.value = false; showPerson.value = false
+  showPopup.value = false; showPerson.value = false; showDialog.value = false
 }
 
 const steps = ['预约信息', '访客信息', '信息确认']
@@ -374,16 +466,45 @@ const tones = [
 ]
 const forms = ['solid', 'outline', 'disabled']
 const checked = ref(true)
+const checkItems = ['已完成证件核验', '已完成危险品确认', '已完成违禁物检查']
+const checkItemsSelected = ref(['已完成证件核验'])
 const showDate = ref(false)
 const showSelect = ref(false)
 const showLanguage = ref(false)
 const showPopup = ref(false)
 const showPerson = ref(false)
+const showDialog = ref(false)
 const userCardName = ref('何引琪')
 const userCardEditRequested = ref(false)
 const userCardMoreRequested = ref(false)
 const vehiclePlate = ref('39A-12345')
 const vehicleMoreRequested = ref(false)
+const searchValue = ref('')
+const scanSearchValue = ref('')
+const triggerSearchValue = ref('')
+const searchTriggers = ['input', 'debounce', 'enter']
+const searchTrigger = ref('input')
+const lastSearchValue = ref('')
+const lastAction = ref('')
+const searchDepartment = ref('全部部门')
+// 安保端页头演示：点「返回 / 关闭」时回显最后一次操作，证明事件真的透出
+const securityAction = ref('')
+const dropdownValue = ref('全部部门')
+const departments = ['全部部门', '显示事业部', '营销部', '研发中心']
+const cascadeValue = ref(['rayong', 'south'])
+const parkOptions = [
+  // 设计稿 1822:38307：触发器短名「泰国工厂（南门）」，层级 tab 全名「HHA泰国-Rayong」
+  { label: 'HHA泰国-Rayong', shortLabel: '泰国工厂', value: 'rayong', children: [
+    { label: '北门', value: 'north' }, { label: '南门', value: 'south' },
+    { label: '西门', value: 'west' }, { label: '东门', value: 'east' }
+  ] },
+  { label: 'HHA泰国-Amata', value: 'amata', children: [
+    { label: '1号门', value: 'amata-1' }, { label: '2号门', value: 'amata-2' }
+  ] },
+  { label: 'HHA越南-同奈', value: 'dongnai', children: [
+    { label: '正门', value: 'dn-main' }, { label: '货运门', value: 'dn-cargo' }
+  ] }
+]
 const vehicleRows = [{ id: 'v1', plate: '39A-12345', type: '大巴' }, { id: 'v2', plate: '39A-12345', type: '大巴' }]
 const selectValue = ref('学术访问')
 const visitDate = ref('')
@@ -397,6 +518,8 @@ function onDateConfirm(date) {
   visitDate.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 const chipMembers = [{ id: 'c1', name: '张益达' }, { id: 'c2', name: '张益达' }, { id: 'c3', name: '张益达' }]
+const memberOptions = [{ id: 'm1', name: '何枢' }, { id: 'm2', name: '孙楠' }, { id: 'm3', name: '吴恒' }, { id: 'm4', name: '郑新' }]
+const memberSelected = ref(['m1'])
 const languages = [{ code: 'CN', label: '中文' }, { code: 'EN', label: '英语' }, { code: 'TH', label: '泰语' }, { code: 'VN', label: '越南语' }]
 const selectOptions = ['商务', '学术访问', '英语']
 const flowItems = [{ id: 1, time: '2026-08-01 09:21', operator: '李彤运', tag: '入园（5）', status: 'done', description: '访客寄存物品：2 个打火机，1 部手机。', people: '郭星睿，战益达，陈三，战硕硕', more: false }, { id: 2, time: '2026-08-01 19:21', operator: '李彤运', tag: '出园（10）', peopleCount: 50, status: 'waiting', people: '郭星睿，战益达，陈三，战硕硕，张益达，战益达，陈三...', more: true }]
@@ -456,7 +579,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .main__title { margin: 0; font: 600 22px/28px "PingFang SC", sans-serif; }
 .main__title code { color: #1D2129; font-size: 22px; font-weight: 600; }
 .badge { flex: 0 0 auto; padding: 5px 10px; border-radius: 20px; font: 500 12px/18px "PingFang SC", sans-serif; }
-.badge--pending { color: #86909C; background: #E5E6EB; }
+.badge--available { color: #00757B; background: #E8FFFB; }
 .badge--prototype { color: #00757B; background: #E8FFFB; }
 .meta { grid-area: meta; margin: 0; padding: 10px 16px; box-sizing: border-box; display: grid; gap: 6px; border-radius: 12px; background: #FFFFFF; }
 .meta div { display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: baseline; }
@@ -485,6 +608,11 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .demo__hint { margin: 12px 0 0; padding: 8px 10px; border-radius: 8px; color: #4E5969; background: #F7F8FA; font: 400 12px/18px "PingFang SC", sans-serif; }
 .demo__stack { display: grid; gap: 12px; }
 .demo__row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-group-title { margin: 0 0 8px; color: #4E5969; font: 500 14px/20px "PingFang SC", sans-serif; }
+.demo__row + .tag-group-title { margin-top: 16px; }
+/* 页头必须满宽，故左右各抵消 .phone__screen 的 16 padding */
+.security-demo { margin: -16px -16px 0; background: #F2F3F5; }
+.security-demo__body { margin: 0; padding: 16px; color: #86909C; font: 400 12px/18px "PingFang SC", sans-serif; }
 .matrix__head { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; color: #86909C; font: 400 11px/16px "PingFang SC", sans-serif; text-align: center; }
 .matrix__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
 .matrix__row :deep(.figma-button) { padding: 0 4px; }

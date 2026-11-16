@@ -1,7 +1,7 @@
 <template>
   <main class="page-frame" :class="`page-frame--${variant}`">
     <header class="page-header">
-      <button v-if="back" class="page-header__back" type="button" :aria-label="t('common.back')" @click="router.back()">‹</button>
+      <button v-if="back" class="page-header__back" type="button" :aria-label="t('common.back')" @click="props.embedded ? emit('back') : router.back()">‹</button>
       <h1>{{ title }}</h1>
       <LocaleSwitcher :outlined="variant === 'detail' || variant === 'form'" />
     </header>
@@ -14,7 +14,8 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import LocaleSwitcher from './LocaleSwitcher.vue'
 
-defineProps({ title: { type: String, required: true }, back: Boolean, variant: { type: String, default: 'default' } })
+const props = defineProps({ title: { type: String, required: true }, back: Boolean, embedded: Boolean, variant: { type: String, default: 'default' } })
+const emit = defineEmits(['back'])
 const { t } = useI18n()
 const router = useRouter()
 </script>

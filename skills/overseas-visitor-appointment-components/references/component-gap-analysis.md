@@ -1,5 +1,14 @@
 # Figma 组件盘点与缺口分析
 
+> **2026-11-10 状态更新（最高优先级，下方 11-05 / 11-06 快照不改写）**
+>
+> - 本文件所有「缺失 / 不存在 / 尚未开始 / 待确认」结论**均为当时快照**，**不再作为当前状态依据**；当前权威状态一律查 `component-registry.md` 第二节 2.0 表与 `page-generation-decision-tree.md`。
+> - 第四节问题 6「`src/pages/` 目录不存在」**已解决**：现有 10 个页面 `.vue`、12 条路由、模板工作台 15 张卡片（含「预约记录页」「安保端详情」及 2026-11-13 新增的 4 张 kind 分支卡：链接已过期 / 入园操作两屏 / 审批页）。
+> - 第四节问题 7「`page-generation-decision-tree.md` 断链」**已解决**：决策树与 `page-generation-sop.md` 已补齐，`quality-gates.md` 模板门禁断链已修。
+> - P1 缺失组件 `Search` / `Dropdown` / `Dialog` **已实现并登记**；P2 `CollapseItem` / `FieldCheckbox` 已于 **2026-11-13** 按用户「补充折叠和复选组件」补齐并登记进 2.0 表，**当前仅剩 `ScanFrame` 1 个**。
+> - 组件数量口径更新为：`index.js` **32 导出**（31 独立 + 1 别名）、**33 个 `.vue`**、画廊 **6 组 36 项**；`RegistrationCard` 已更名 `AppointmentRecordCard`；新增 `SecurityHeader`（安保端页头）、`CollapseItem`、`FieldCheckbox`。
+> - **可用性裁决**：`pending` / `ready` 仅表示 Figma 逐项截图对照进度，全部已实现组件均可用于页面与页面模板搭建。
+>
 > **2026-11-06 状态更新**（本文件保留为 11-05 盘点快照，下方原表与结论不改写）
 >
 > - 第四节问题 **1 / 2 / 3 / 4 已解决**：`component-registry.md` 重写为 21 个 `Figma*` 组件权威清单、状态统一 `pending`、旧 `Hisense*` 内容降级为历史章节；`src/components/figma/index.js` 补齐 21 个导出（原 16 个）；`FigmaDatePicker` / `FigmaFlowRecordCard` / `FigmaMemberSelectionFlow` / `FigmaPersonListPopup` / `FigmaRegistrationCard` 五个组件已全部入表。
@@ -312,4 +321,4 @@
 - **「更多支持点击」**指记录卡片的「更多」，还是 P1 缺失的 `Dropdown`「更多」。
 - **二维码**「样式用我提供」是否即 `src/assets/qr-placeholder.png`。
 - **`InlineInput` 是否改名**（视觉是状态标签，名称沿用 Figma 节点名）。
-- **组件状态**：21 个组件仍全部 `pending`，未完成 Figma 截图对照，不得用于新页面模板。
+- **组件状态**：21 个组件仍全部 `pending`（**仅 Figma 逐项截图对照进度**）；用户 2026-11-10 13:55 裁决「现有的组件可以用于页面和模板的搭建」，**均可用于页面与页面模板搭建**，「不得用于新页面模板」为已作废的旧口径。

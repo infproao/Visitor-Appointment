@@ -25,13 +25,13 @@
       <p>与市场部团队洽谈 2026 年第二季度合作项目的详细方案，涵盖生产排期、交付时间节点，并实地参观生产车间与成品仓库</p>
     </article>
 
-    <RegistrationCard :record="registration" />
+    <AppointmentRecordCard :record="registration" />
   </section>
 </template>
 
 <script setup>
 import Tag from './Tag.vue'
-import RegistrationCard from './RegistrationCard.vue'
+import AppointmentRecordCard from './AppointmentRecordCard.vue'
 
 defineProps({ registration: { type: Object, default: () => ({}) } })
 </script>
