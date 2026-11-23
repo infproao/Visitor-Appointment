@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import HomePage from './pages/HomePage.vue'
 import SuccessPage from './pages/SuccessPage.vue'
 import AppointmentFormPage from './pages/AppointmentFormPage.vue'
@@ -9,7 +9,7 @@ import ComponentGallery from './ComponentGallery.vue'
 import SpecialPageView from './pages/SpecialPageView.vue'
 
 export default createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     { path: '/', redirect: '/components' },
     { path: '/home', name: 'home', component: HomePage },
