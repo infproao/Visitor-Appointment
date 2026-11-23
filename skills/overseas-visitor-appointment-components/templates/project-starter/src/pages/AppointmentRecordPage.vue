@@ -78,7 +78,7 @@ const router = useRouter()
 
 function goBack() {
   if (props.embedded) emit('back')
-  else router.push('/')
+  else router.push('/home')
 }
 
 // 用户 2026-11-15「用户端预约记录卡片的详情样式和预约详情页一样」：点卡进预约详情页（query 带上本条记录）

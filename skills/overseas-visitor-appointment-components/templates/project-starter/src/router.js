@@ -11,7 +11,8 @@ import SpecialPageView from './pages/SpecialPageView.vue'
 export default createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', name: 'home', component: HomePage },
+    { path: '/', redirect: '/components' },
+    { path: '/home', name: 'home', component: HomePage },
     { path: '/appointment/success', name: 'appointment-success', component: SuccessPage },
     { path: '/appointment/share', name: 'appointment-share', component: SpecialPageView, props: { kind: 'share-success' } },
     { path: '/appointment/new', name: 'appointment-form', component: AppointmentFormPage },

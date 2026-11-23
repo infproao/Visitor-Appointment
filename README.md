@@ -14,6 +14,12 @@
 
 ## 快速开始
 
+### 在线预览（免安装，直接看组件库）
+
+**https://infproao.github.io/Visitor-Appointment/**
+
+打开即组件库画廊（`/components`）：左侧分组导航 + 搜索，右侧逐个预览已注册组件与页面模板。业务首页在 `/home`。
+
 ### 分享 / 安装 Skill（给 AI 用，推荐）
 
 ```bash
@@ -35,7 +41,7 @@ npm install
 npm run dev
 ```
 
-打开终端输出的本地地址即可看到组件工作台和页面预览。要求 Node 18+。
+启动后默认打开组件库画廊（`/components`）；业务首页在 `/home`。要求 Node 18+。
 
 ### 克隆完整仓库
 
